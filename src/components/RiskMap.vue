@@ -6,24 +6,27 @@
 
 <script lang="ts">
 import Vue from "vue";
-import L from "leaflet";
+import L, { LatLngExpression } from "leaflet";
 
 type NullableMap = L.Map | null;
+
 
 export default Vue.extend({
   name: "RiskMap",
   props: {},
   data: function() {
     return {
-      map: null as NullableMap
+      map: null as NullableMap,
+      mapCenter: [50.83333, 4] as LatLngExpression,
+      zoomLevel: 7
     };
   },
   mounted: function() {
-    this.initMap();
+    this.initMap(this.mapCenter, this.zoomLevel);
   },
   methods: {
-    initMap: function() {
-      this.map = L.map("map").setView([38.63, -90.23], 12);
+    initMap: function(center: LatLngExpression, zoom: number) {
+      this.map = L.map("map").setView(center, zoom);
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
