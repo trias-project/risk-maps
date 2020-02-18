@@ -12,8 +12,8 @@ import parseGeoraster from "georaster";
 //import { GeoRasterLayer } from "georaster-layer-for-leaflet";
 import GeoRasterLayer from "georaster-layer-for-leaflet";
 
-/*import * as proj4 from 'proj4';
-window['proj4'] = proj4.default;*/
+import * as proj4 from 'proj4';
+window['proj4'] = proj4.default;
 
 type NullableMap = L.Map | null;
 
@@ -35,7 +35,7 @@ export default Vue.extend({
     addGeoTif: function() {
       //const urlToGeotif = "/geotiffs/be_3190653_hist.tif";
 
-      fetch("http://localhost:8081/geotiffs/be_3190653_hist.tif")
+      fetch("http://localhost:8081/geotiffs/be_3190653_rcp26.4326.tif") // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
@@ -45,7 +45,7 @@ export default Vue.extend({
               georaster: georaster,
               opacity: 0.7,
               pixelValuesToColorFn: values =>
-                values[0] > 100 ? "#ff0000" : "#0000ff",
+                values[0] > 0.01 ? "#ff0000" : "#0000ff",
               resolution: 64 // optional parameter for adjusting display resolution
             });
             layer.addTo(this.map);
