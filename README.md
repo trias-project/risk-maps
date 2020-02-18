@@ -1,5 +1,7 @@
 # trias-risk-map
 
+Small Vue-based prototype to show risk maps (data from GeoTiff files), without any server-side component.
+
 ## Project setup
 ```
 npm install

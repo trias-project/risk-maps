@@ -35,7 +35,8 @@ export default Vue.extend({
     addGeoTif: function() {
       //const urlToGeotif = "/geotiffs/be_3190653_hist.tif";
 
-      fetch("http://localhost:8081/geotiffs/be_3190653_rcp26.4326.tif") // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
+      // TODO: make adress/port dynamic
+      fetch("http://localhost:8080/geotiffs/be_3190653_rcp26.4326.tif") // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
