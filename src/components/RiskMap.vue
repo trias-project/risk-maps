@@ -5,13 +5,12 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable camelcase */
+// TODO: remove unnecessary axios dependency
 import Vue from "vue";
 import L, { LatLngExpression } from "leaflet";
 import parseGeoraster from "georaster";
 //import { GeoRasterLayer } from "georaster-layer-for-leaflet";
-import { GeoRasterLayer } from "georaster-layer-for-leaflet";
-import axios from 'axios';
+import GeoRasterLayer from "georaster-layer-for-leaflet";
 
 /*import * as proj4 from 'proj4';
 window['proj4'] = proj4.default;*/
@@ -40,10 +39,20 @@ export default Vue.extend({
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
-          console.log("georaster:", georaster);
+            console.log("georaster:", georaster);
+
+            const layer = new GeoRasterLayer({
+              georaster: georaster,
+              opacity: 0.7,
+              pixelValuesToColorFn: values =>
+                values[0] > 100 ? "#ff0000" : "#0000ff",
+              resolution: 64 // optional parameter for adjusting display resolution
+            });
+            layer.addTo(this.map);
+
+            this.map.fitBounds(layer.getBounds());
           });
         });
-
     },
     initMap: function(center: LatLngExpression, zoom: number) {
       this.map = L.map("map").setView(center, zoom);
