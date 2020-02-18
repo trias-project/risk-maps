@@ -5,11 +5,18 @@
 </template>
 
 <script lang="ts">
+/* eslint-disable camelcase */
 import Vue from "vue";
 import L, { LatLngExpression } from "leaflet";
+import parseGeoraster from "georaster";
+//import { GeoRasterLayer } from "georaster-layer-for-leaflet";
+import { GeoRasterLayer } from "georaster-layer-for-leaflet";
+import axios from 'axios';
+
+/*import * as proj4 from 'proj4';
+window['proj4'] = proj4.default;*/
 
 type NullableMap = L.Map | null;
-
 
 export default Vue.extend({
   name: "RiskMap",
@@ -23,14 +30,28 @@ export default Vue.extend({
   },
   mounted: function() {
     this.initMap(this.mapCenter, this.zoomLevel);
+    this.addGeoTif();
   },
   methods: {
+    addGeoTif: function() {
+      //const urlToGeotif = "/geotiffs/be_3190653_hist.tif";
+
+      fetch("http://localhost:8081/geotiffs/be_3190653_hist.tif")
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => {
+          parseGeoraster(arrayBuffer).then(georaster => {
+          console.log("georaster:", georaster);
+          });
+        });
+
+    },
     initMap: function(center: LatLngExpression, zoom: number) {
       this.map = L.map("map").setView(center, zoom);
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+        attribution:
+          '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(this.map);
     }
   }
