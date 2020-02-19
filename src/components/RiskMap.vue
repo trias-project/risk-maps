@@ -9,11 +9,12 @@ import Vue from "vue";
 import L, { LatLngExpression } from "leaflet";
 import parseGeoraster from "georaster";
 import GeoRasterLayer from "georaster-layer-for-leaflet";
+import * as d3 from "d3";
 
 import * as proj4 from "proj4";
 window["proj4"] = proj4.default;
 
-export default Vue.extend({ 
+export default Vue.extend({
   name: "RiskMap",
   props: {},
   data: function() {
@@ -23,12 +24,13 @@ export default Vue.extend({
       zoomLevel: 7,
 
       publicPath: process.env.BASE_URL,
+      colorScale: d3.interpolateTurbo // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scal here
     };
   },
   mounted: function() {
     this.initMap(this.mapCenter, this.zoomLevel);
-    
-    const urlToGeotif = `${this.publicPath}geotiffs/be_3190653_hist.4326.tif`
+
+    const urlToGeotif = `${this.publicPath}geotiffs/be_3190653_hist.4326.tif`;
     this.addGeoTif(urlToGeotif);
   },
   methods: {
@@ -40,8 +42,14 @@ export default Vue.extend({
             const layer = new GeoRasterLayer({
               georaster: georaster,
               opacity: 0.7,
-              pixelValuesToColorFn: values =>
-                values[0] > 0.01 ? "#ff0000" : "#0000ff",
+              pixelValuesToColorFn: values => {
+                if (values[0] < -10000) {
+                  // no data is represented by very small values (normal range is [0,1])
+                  return "rgba(0, 0, 0, 0)"; // transparent
+                } else {
+                  return this.colorScale(values[0]);
+                }
+              },
               resolution: 64 // optional parameter for adjusting display resolution
             });
             layer.addTo(this.map);
