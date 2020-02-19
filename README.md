@@ -12,15 +12,12 @@ npm install
 npm run serve
 ```
 
-### Compiles and minifies for production
+### To deploy
+
+On [https://trias-project.github.io/risk-maps/](https://trias-project.github.io/risk-maps/)
+
 ```
-npm run build
+$ rm -rf ./docs && npm run build && mv ./dist ./docs
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Then commit and push, including the `docs` directory. GitHub pages does the rest. 

@@ -13,32 +13,30 @@ import GeoRasterLayer from "georaster-layer-for-leaflet";
 import * as proj4 from "proj4";
 window["proj4"] = proj4.default;
 
-type NullableMap = L.Map | null;
-
 export default Vue.extend({
   name: "RiskMap",
   props: {},
   data: function() {
     return {
-      map: null as unknown as L.Map,
+      map: (null as unknown) as L.Map,
       mapCenter: [50.83333, 4] as LatLngExpression,
-      zoomLevel: 7
+      zoomLevel: 7,
+
+      publicPath: process.env.BASE_URL,
     };
   },
   mounted: function() {
     this.initMap(this.mapCenter, this.zoomLevel);
-    this.addGeoTif();
+    
+    const urlToGeotif = `${this.publicPath}geotiffs/be_3190653_hist.4326.tif`
+    this.addGeoTif(urlToGeotif);
   },
   methods: {
-    addGeoTif: function() {
-      const urlToGeotif = "http://localhost:8080/geotiffs/be_3190653_rcp26.4326.tif";
-
-      // TODO: make adress/port dynamic
+    addGeoTif: function(urlToGeotif: string): void {
       fetch(urlToGeotif) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
-
             const layer = new GeoRasterLayer({
               georaster: georaster,
               opacity: 0.7,
@@ -52,7 +50,7 @@ export default Vue.extend({
           });
         });
     },
-    initMap: function(center: LatLngExpression, zoom: number) {
+    initMap: function(center: LatLngExpression, zoom: number): void {
       this.map = L.map("map").setView(center, zoom);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -61,7 +59,7 @@ export default Vue.extend({
           '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(this.map);
     }
-  } 
+  }
 });
 </script>
 
