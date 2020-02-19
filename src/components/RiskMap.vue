@@ -5,15 +5,13 @@
 </template>
 
 <script lang="ts">
-// TODO: remove unnecessary axios dependency
 import Vue from "vue";
 import L, { LatLngExpression } from "leaflet";
 import parseGeoraster from "georaster";
-//import { GeoRasterLayer } from "georaster-layer-for-leaflet";
 import GeoRasterLayer from "georaster-layer-for-leaflet";
 
-import * as proj4 from 'proj4';
-window['proj4'] = proj4.default;
+import * as proj4 from "proj4";
+window["proj4"] = proj4.default;
 
 type NullableMap = L.Map | null;
 
@@ -22,7 +20,7 @@ export default Vue.extend({
   props: {},
   data: function() {
     return {
-      map: null as NullableMap,
+      map: null as unknown as L.Map,
       mapCenter: [50.83333, 4] as LatLngExpression,
       zoomLevel: 7
     };
@@ -33,14 +31,13 @@ export default Vue.extend({
   },
   methods: {
     addGeoTif: function() {
-      //const urlToGeotif = "/geotiffs/be_3190653_hist.tif";
+      const urlToGeotif = "http://localhost:8080/geotiffs/be_3190653_rcp26.4326.tif";
 
       // TODO: make adress/port dynamic
-      fetch("http://localhost:8080/geotiffs/be_3190653_rcp26.4326.tif") // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
+      fetch(urlToGeotif) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
-            console.log("georaster:", georaster);
 
             const layer = new GeoRasterLayer({
               georaster: georaster,
@@ -64,7 +61,7 @@ export default Vue.extend({
           '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(this.map);
     }
-  }
+  } 
 });
 </script>
 
