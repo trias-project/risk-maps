@@ -13,7 +13,7 @@ import GeoRasterLayer from "georaster-layer-for-leaflet";
 import * as proj4 from "proj4";
 window["proj4"] = proj4.default;
 
-export default Vue.extend({
+export default Vue.extend({ 
   name: "RiskMap",
   props: {},
   data: function() {
