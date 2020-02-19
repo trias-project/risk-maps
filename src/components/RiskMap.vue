@@ -24,7 +24,7 @@ export default Vue.extend({
       zoomLevel: 7,
 
       publicPath: process.env.BASE_URL,
-      colorScale: d3.interpolateTurbo // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scal here
+      colorScale: d3.interpolateViridis // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
     };
   },
   mounted: function() {
