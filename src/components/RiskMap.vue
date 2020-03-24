@@ -1,7 +1,9 @@
 <template>
-  <div>
-    <div id="map" />
-  </div>
+  <b-row>
+    <b-col>
+      <div id="map" />
+    </b-col>
+  </b-row>
 </template>
 
 <script lang="ts">
@@ -43,8 +45,8 @@ export default Vue.extend({
               georaster: georaster,
               opacity: 0.7,
               pixelValuesToColorFn: values => {
+                // no data is represented by very small values (normal range is [0,1])
                 if (values[0] < -10000) {
-                  // no data is represented by very small values (normal range is [0,1])
                   return "rgba(0, 0, 0, 0)"; // transparent
                 } else {
                   return this.colorScale(values[0]);
@@ -75,7 +77,7 @@ export default Vue.extend({
 @import "../../node_modules/leaflet/dist/leaflet.css";
 
 div#map {
-  width: 640px;
-  height: 480px;
+  width: 800px;
+  height: 600px;
 }
 </style>

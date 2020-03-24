@@ -11,6 +11,8 @@
     "@types/d3": "^5.7.2",
     "@types/leaflet": "^1.5.8",
     "@types/proj4": "^2.5.0",
+    "bootstrap": "^4.4.1",
+    "bootstrap-vue": "^2.8.0",
     "core-js": "^3.6.4",
     "d3": "^5.15.0",
     "georaster": "^1.0.3",
