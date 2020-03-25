@@ -4,6 +4,7 @@
       <b-col>
         <b-form inline>
           <b-form-select v-model="speciesId" :options="availableSpecies"></b-form-select>
+          <b-form-select v-model="climateScenarioId" :options="availableScenarii"></b-form-select>
         </b-form>
       </b-col>
     </b-row>
@@ -32,6 +33,16 @@ export default Vue.extend({
           { value: 3189866, text: 'Acer negundo L.' },
           { value: 3190653, text: 'Ailanthus altissima (Mill.) Swingle'}
         ],
+
+      climateScenarioId: null,
+      availableScenarii: [
+        { value: null, text: 'Please select an option' },
+        { value: 'hist', text: 'model based on historical climate data' },
+        { value: 'rcp26', text: 'model based on climate forecasts under RCP 2.6 for 2040-2070' },
+        { value: 'rcp45', text: 'model based on climate forecasts under RCP 4.5 for 2040-2071' },
+        { value: 'rcp85', text: 'model based on climate forecasts under RCP 8.5 for 2040-2072' },
+      ],
+
       
       publicPath: process.env.BASE_URL,
     };
@@ -40,7 +51,7 @@ export default Vue.extend({
   },
   computed: {
     geotiffUrl: function(): string {
-      return `${this.publicPath}geotiffs/be_3190653_hist.4326.tif`;
+      return `${this.publicPath}geotiffs/be_3190653_${this.climateScenarioId}.4326.tif`;
     }
   },
   components: {

@@ -25,6 +25,8 @@ export default Vue.extend({
       initialMapPosition: [50.83333, 4] as LatLngExpression,
       initialZoomLevel: 7,
 
+      georasterLayer: null as unknown as GeoRasterLayer,
+
       colorScale: d3.interpolateViridis // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
     };
   },
@@ -35,7 +37,8 @@ export default Vue.extend({
     geotiffUrl: {
       immediate: true,  
       handler: function(newVal: string) {
-        this.addGeoTif(newVal);
+        this.removeExistingGeoTif();  
+        this.loadAndAddGeoTif(newVal);
       }
     }
   },
@@ -49,13 +52,17 @@ export default Vue.extend({
           '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(this.lMapObj);
     },
-    addGeoTif: function(urlToGeotif: string): void {
-      console.log("passe addGeoTif");
-      fetch(urlToGeotif) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
+    removeExistingGeoTif: function(): void {
+        if (this.lMapObj && this.georasterLayer) {
+            this.lMapObj.removeLayer(this.georasterLayer);
+        }
+    },
+    loadAndAddGeoTif: function(url: string): void {
+      fetch(url) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
-            const layer = new GeoRasterLayer({
+            this.georasterLayer = new GeoRasterLayer({
               georaster: georaster,
               opacity: 0.7,
               pixelValuesToColorFn: values => {
@@ -68,9 +75,9 @@ export default Vue.extend({
               },
               resolution: 64 // optional parameter for adjusting display resolution
             });
-            layer.addTo(this.lMapObj);
+            this.georasterLayer.addTo(this.lMapObj);
 
-            this.lMapObj.fitBounds(layer.getBounds());
+            this.lMapObj.fitBounds(this.georasterLayer.getBounds());
           });
         });
     }
