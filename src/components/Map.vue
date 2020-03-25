@@ -1,9 +1,5 @@
 <template>
-  <b-row>
-    <b-col>
-      <div id="map" />
-    </b-col>
-  </b-row>
+  <div id="map" />
 </template>
 
 <script lang="ts">
@@ -12,31 +8,49 @@ import L, { LatLngExpression } from "leaflet";
 import parseGeoraster from "georaster";
 import GeoRasterLayer from "georaster-layer-for-leaflet";
 import * as d3 from "d3";
-
-import * as proj4 from "proj4";
-window["proj4"] = proj4.default;
+import * as proj4 from "proj4"; // Is proj4 (implicitly) needed?
+window["proj4"] = proj4.default; // Is proj4 (implicitly) needed?
 
 export default Vue.extend({
-  name: "RiskMap",
-  props: {},
+  name: "Map",
+  props: {
+    geotiffUrl: {
+      type: String,
+      default: null
+    }
+  },
   data: function() {
     return {
-      map: (null as unknown) as L.Map,
-      mapCenter: [50.83333, 4] as LatLngExpression,
-      zoomLevel: 7,
+      lMapObj: (null as unknown) as L.Map,
+      initialMapPosition: [50.83333, 4] as LatLngExpression,
+      initialZoomLevel: 7,
 
-      publicPath: process.env.BASE_URL,
       colorScale: d3.interpolateViridis // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
     };
   },
   mounted: function() {
-    this.initMap(this.mapCenter, this.zoomLevel);
-
-    const urlToGeotif = `${this.publicPath}geotiffs/be_3190653_hist.4326.tif`;
-    this.addGeoTif(urlToGeotif);
+    this.initMap(this.initialMapPosition, this.initialZoomLevel);
+  },
+  watch: {
+    geotiffUrl: {
+      immediate: true,  
+      handler: function(newVal: string) {
+        this.addGeoTif(newVal);
+      }
+    }
   },
   methods: {
+    initMap: function(center: LatLngExpression, zoom: number): void {
+      this.lMapObj = L.map("map").setView(center, zoom);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+      }).addTo(this.lMapObj);
+    },
     addGeoTif: function(urlToGeotif: string): void {
+      console.log("passe addGeoTif");
       fetch(urlToGeotif) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
         .then(response => response.arrayBuffer())
         .then(arrayBuffer => {
@@ -54,30 +68,12 @@ export default Vue.extend({
               },
               resolution: 64 // optional parameter for adjusting display resolution
             });
-            layer.addTo(this.map);
+            layer.addTo(this.lMapObj);
 
-            this.map.fitBounds(layer.getBounds());
+            this.lMapObj.fitBounds(layer.getBounds());
           });
         });
-    },
-    initMap: function(center: LatLngExpression, zoom: number): void {
-      this.map = L.map("map").setView(center, zoom);
-
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-      }).addTo(this.map);
     }
   }
 });
 </script>
-
-<style scoped>
-@import "../../node_modules/leaflet/dist/leaflet.css";
-
-div#map {
-  width: 800px;
-  height: 600px;
-}
-</style>

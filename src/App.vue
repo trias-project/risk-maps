@@ -7,19 +7,19 @@
     </b-container>
 
     <b-container>
-      <RiskMap msg="truc" />
+      <RiskMapApp />
     </b-container>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import RiskMap from "./components/RiskMap.vue";
+import RiskMapApp from "./components/RiskMapApp.vue";
 
 export default Vue.extend({
   name: "App",
   components: {
-    RiskMap
+    RiskMapApp
   }
 });
 </script>
