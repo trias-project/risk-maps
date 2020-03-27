@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
-        <div id="map" style="height: 640px; width: 930px;" />
+        <div id="map" style="height: 640px; width: 1110px;" />
     </div>
 </template>
 
@@ -25,8 +25,8 @@ export default Vue.extend({
   data: function() {
     return {
       lMapObj: (null as unknown) as L.Map,
-      initialMapPosition: [50.83333, 4] as LatLngExpression,
-      initialZoomLevel: 7,
+      initialMapPosition: [50.47294859181385, 4.4839374800019005] as LatLngExpression,
+      initialZoomLevel: 8,
       georasterLayer: null as unknown as GeoRasterLayer,
       colorScale: d3.interpolateViridis, // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
       loadError: false,
