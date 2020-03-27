@@ -1,5 +1,8 @@
 <template>
-  <div id="map" />
+    <div>
+        <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
+        <div id="map" style="height: 640px; width: 930px;" />
+    </div>
 </template>
 
 <script lang="ts">
@@ -24,10 +27,9 @@ export default Vue.extend({
       lMapObj: (null as unknown) as L.Map,
       initialMapPosition: [50.83333, 4] as LatLngExpression,
       initialZoomLevel: 7,
-
       georasterLayer: null as unknown as GeoRasterLayer,
-
-      colorScale: d3.interpolateViridis // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
+      colorScale: d3.interpolateViridis, // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
+      loadError: false,
     };
   },
   mounted: function() {
@@ -58,8 +60,13 @@ export default Vue.extend({
         }
     },
     loadAndAddGeoTif: function(url: string): void {
+        const handleErrors = function (response: Response) {
+            if (!response.ok) { throw Error(response.statusText); }
+            return response;
+        }
       fetch(url) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
-        .then(response => response.arrayBuffer())
+        .then(handleErrors)
+        .then(function(response) { return response.arrayBuffer() })
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
             this.georasterLayer = new GeoRasterLayer({
@@ -78,8 +85,10 @@ export default Vue.extend({
             this.georasterLayer.addTo(this.lMapObj);
 
             this.lMapObj.fitBounds(this.georasterLayer.getBounds());
+            this.loadError = false;
           });
-        });
+        })
+        .catch(error => { console.log(error); this.loadError = true });
     }
   }
 });

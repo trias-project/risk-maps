@@ -28,7 +28,7 @@ export default Vue.extend({
     return {
       speciesId: null,
       availableSpecies: [
-          { value: null, text: 'Please select an option' },
+          { value: null, text: 'Please select an option', disabled: true },
           // TODO: load available species from (automatically generated) config file
           { value: 3189866, text: 'Acer negundo L.' },
           { value: 3190653, text: 'Ailanthus altissima (Mill.) Swingle'}
@@ -36,7 +36,7 @@ export default Vue.extend({
 
       climateScenarioId: null,
       availableScenarii: [
-        { value: null, text: 'Please select an option' },
+        { value: null, text: 'Please select an option', disabled: true },
         { value: 'hist', text: 'model based on historical climate data' },
         { value: 'rcp26', text: 'model based on climate forecasts under RCP 2.6 for 2040-2070' },
         { value: 'rcp45', text: 'model based on climate forecasts under RCP 4.5 for 2040-2071' },
@@ -51,7 +51,15 @@ export default Vue.extend({
   },
   computed: {
     geotiffUrl: function(): string {
-      return `${this.publicPath}geotiffs/be_3190653_${this.climateScenarioId}.4326.tif`;
+      if (this.selectionMade) {
+        return `${this.publicPath}geotiffs/be_3190653_${this.climateScenarioId}.4326.tif`;
+      } else {
+        return '';
+      }
+      
+    },
+    selectionMade: function(): boolean {
+      return this.climateScenarioId != null ? true : false;
     }
   },
   components: {
