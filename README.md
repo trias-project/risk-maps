@@ -17,7 +17,7 @@ npm run serve
 On [https://trias-project.github.io/risk-maps/](https://trias-project.github.io/risk-maps/)
 
 ```
-$ rm -rf ./docs && npm run build && mv ./dist ./docs
+$ npm run build
 ```
 
 Then commit and push, including the `docs` directory. GitHub pages does the rest. 
