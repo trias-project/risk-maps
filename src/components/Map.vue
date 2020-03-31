@@ -13,6 +13,7 @@ import GeoRasterLayer from "georaster-layer-for-leaflet";
 import * as d3 from "d3";
 import * as proj4 from "proj4"; // Is proj4 (implicitly) needed?
 window["proj4"] = proj4.default; // Is proj4 (implicitly) needed?
+import { OverlayConf } from "../interfaces";
 
 export default Vue.extend({
   name: "Map",
@@ -20,6 +21,10 @@ export default Vue.extend({
     geotiffUrl: {
       type: String,
       default: null
+    },
+    overlaysConf : {
+      type: Array as () => OverlayConf[],
+      default: () => []
     }
   },
   data: function() {
@@ -61,11 +66,7 @@ export default Vue.extend({
       this.addOverlays();
     },
     addOverlays: function(): void {
-      const overlaysConf = [
-        {url: 'http://localhost:8080/overlays/ecoregions.geojson', name: 'Ecoregions'}
-      ];
-
-      for (const overlay of overlaysConf) {
+      for (const overlay of this.overlaysConf) {
         fetch(overlay.url)
           .then(res => res.json())
           .then(data => { 

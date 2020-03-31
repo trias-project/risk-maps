@@ -11,7 +11,7 @@
     </b-row>
     <b-row>
       <b-col>
-        <Map :geotiff-url="geotiffUrl" />
+        <Map :geotiff-url="geotiffUrl" :overlays-conf="overlaysConf"/>
       </b-col>
     </b-row>
   </div>
@@ -21,6 +21,7 @@
 import Vue from "vue";
 
 import Map from "./Map.vue";
+import { OverlayConf } from "../interfaces";
 
 export default Vue.extend({
   name: "RiskMapApp",
@@ -58,6 +59,12 @@ export default Vue.extend({
   methods: {
   },
   computed: {
+    overlaysConf: function(): OverlayConf[] {
+      return [
+        { filename: 'ecoregions.geojson', label: 'Ecoregions' }
+        
+      ].map(e => { return {url: `${this.publicPath}overlays/${e.filename}`, name: e.label} })
+    },
     geotiffUrl: function(): string {
       if (this.selectionMade) {
         if (this.mapTypeId === '') {
