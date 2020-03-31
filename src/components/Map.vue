@@ -25,6 +25,7 @@ export default Vue.extend({
   data: function() {
     return {
       lMapObj: (null as unknown) as L.Map,
+      layersControl: (null as unknown) as L.Control.Layers,
       initialMapPosition: [50.47294859181385, 4.4839374800019005] as LatLngExpression,
       initialZoomLevel: 8,
       georasterLayer: null as unknown as GeoRasterLayer,
@@ -53,7 +54,26 @@ export default Vue.extend({
         attribution:
           '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(this.lMapObj);
+
+      this.layersControl =  L.control.layers();
+      this.layersControl.addTo(this.lMapObj);
+      
+      this.addOverlays();
     },
+    addOverlays: function(): void {
+      const overlaysConf = [
+        {url: 'http://localhost:8080/overlays/ecoregions.geojson', name: 'Ecoregions'}
+      ];
+
+      for (const overlay of overlaysConf) {
+        fetch(overlay.url)
+          .then(res => res.json())
+          .then(data => { 
+            this.layersControl.addOverlay(L.geoJSON(data), overlay.name);
+          });
+      }
+    },
+    
     removeExistingGeoTif: function(): void {
         if (this.lMapObj && this.georasterLayer) {
             this.lMapObj.removeLayer(this.georasterLayer);
