@@ -1,8 +1,8 @@
 <template>
-    <div>
-        <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
-        <div id="map" style="height: 640px; width: 1110px;" />
-    </div>
+  <div>
+    <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
+    <div id="map" style="height: 640px; width: 1110px;" />
+  </div>
 </template>
 
 <script lang="ts">
@@ -22,7 +22,7 @@ export default Vue.extend({
       type: String,
       default: null
     },
-    overlaysConf : {
+    overlaysConf: {
       type: Array as () => OverlayConf[],
       default: () => []
     }
@@ -31,11 +31,15 @@ export default Vue.extend({
     return {
       lMapObj: (null as unknown) as L.Map,
       layersControl: (null as unknown) as L.Control.Layers,
-      initialMapPosition: [50.47294859181385, 4.4839374800019005] as LatLngExpression,
+      ecoregionsLayer: (null as unknown) as L.GeoJSON,
+      initialMapPosition: [
+        50.47294859181385,
+        4.4839374800019005
+      ] as LatLngExpression,
       initialZoomLevel: 8,
-      georasterLayer: null as unknown as GeoRasterLayer,
+      georasterLayer: (null as unknown) as GeoRasterLayer,
       colorScale: d3.interpolateViridis, // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
-      loadError: false,
+      loadError: false
     };
   },
   mounted: function() {
@@ -43,14 +47,44 @@ export default Vue.extend({
   },
   watch: {
     geotiffUrl: {
-      immediate: true,  
+      immediate: true,
       handler: function(newVal: string) {
-        this.removeExistingGeoTif();  
+        this.removeExistingGeoTif();
         this.loadAndAddGeoTif(newVal);
       }
     }
   },
   methods: {
+    resetHighlight: function(e) {
+      this.ecoregionsLayer.resetStyle(e.target);
+    },
+
+    highlightFeature: function(e) {
+      const layer = e.target;
+
+      layer.setStyle({
+        weight: 5,
+        color: "#666",
+        dashArray: "",
+        fillOpacity: 0.7
+      });
+
+      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+      }
+    },
+
+    zoomToFeature: function(e) {
+      this.lMapObj.fitBounds(e.target.getBounds());
+    },
+
+    onEachFeature: function(feature, layer) {
+        layer.on({
+          mouseover: this.highlightFeature,
+          mouseout: this.resetHighlight,
+          click: this.zoomToFeature
+        });
+      },
     initMap: function(center: LatLngExpression, zoom: number): void {
       this.lMapObj = L.map("map").setView(center, zoom);
 
@@ -60,34 +94,56 @@ export default Vue.extend({
           '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(this.lMapObj);
 
-      this.layersControl =  L.control.layers();
+      this.layersControl = L.control.layers();
       this.layersControl.addTo(this.lMapObj);
-      
+
       this.addOverlays();
     },
     addOverlays: function(): void {
+      
+
+      function overlayStyle(): L.PathOptions {
+        return {
+          fillColor: "red",
+          weight: 2,
+          opacity: 1,
+          color: "white",
+          dashArray: "2",
+          fillOpacity: 0.2
+        };
+      }
+
       for (const overlay of this.overlaysConf) {
         fetch(overlay.url)
           .then(res => res.json())
-          .then(data => { 
-            this.layersControl.addOverlay(L.geoJSON(data), overlay.name);
+          .then(data => {
+            // FIXME: this only works as long as we have a single overlay layer
+            this.ecoregionsLayer = L.geoJSON(data, {
+              style: overlayStyle,
+              onEachFeature: this.onEachFeature
+            });
+            this.layersControl.addOverlay(this.ecoregionsLayer, overlay.name);
           });
       }
     },
-    
+
     removeExistingGeoTif: function(): void {
-        if (this.lMapObj && this.georasterLayer) {
-            this.lMapObj.removeLayer(this.georasterLayer);
-        }
+      if (this.lMapObj && this.georasterLayer) {
+        this.lMapObj.removeLayer(this.georasterLayer);
+      }
     },
     loadAndAddGeoTif: function(url: string): void {
-        const handleErrors = function (response: Response) {
-            if (!response.ok) { throw Error(response.statusText); }
-            return response;
+      const handleErrors = function(response: Response) {
+        if (!response.ok) {
+          throw Error(response.statusText);
         }
+        return response;
+      };
       fetch(url) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
         .then(handleErrors)
-        .then(function(response) { return response.arrayBuffer() })
+        .then(function(response) {
+          return response.arrayBuffer();
+        })
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
             this.georasterLayer = new GeoRasterLayer({
@@ -109,7 +165,9 @@ export default Vue.extend({
             this.loadError = false;
           });
         })
-        .catch(() => {this.loadError = true });
+        .catch(() => {
+          this.loadError = true;
+        });
     }
   }
 });
