@@ -14,6 +14,7 @@ import * as d3 from "d3";
 import * as proj4 from "proj4"; // Is proj4 (implicitly) needed?
 window["proj4"] = proj4.default; // Is proj4 (implicitly) needed?
 import { OverlayConf } from "../interfaces";
+import * as geojson from 'geojson';
 
 export default Vue.extend({
   name: "Map",
@@ -55,11 +56,11 @@ export default Vue.extend({
     }
   },
   methods: {
-    resetHighlight: function(e) {
+    resetHighlight: function(e: L.LeafletEvent) {
       this.ecoregionsLayer.resetStyle(e.target);
     },
 
-    highlightFeature: function(e) {
+    highlightFeature: function(e: L.LeafletEvent) {
       const layer = e.target;
 
       layer.setStyle({
@@ -74,11 +75,11 @@ export default Vue.extend({
       }
     },
 
-    zoomToFeature: function(e) {
+    zoomToFeature: function(e: L.LeafletEvent) {
       this.lMapObj.fitBounds(e.target.getBounds());
     },
 
-    onEachFeature: function(feature, layer) {
+    onEachFeature: function(feature: geojson.Feature, layer: L.GeoJSON) {
         layer.on({
           mouseover: this.highlightFeature,
           mouseout: this.resetHighlight,
