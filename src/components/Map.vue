@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
+    Overlay: <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
     <div id="map" style="height: 640px; width: 1110px;" />
   </div>
 </template>
@@ -14,7 +15,7 @@ import * as d3 from "d3";
 import * as proj4 from "proj4"; // Is proj4 (implicitly) needed?
 window["proj4"] = proj4.default; // Is proj4 (implicitly) needed?
 import { OverlayConf } from "../interfaces";
-import * as geojson from 'geojson';
+import * as geojson from "geojson";
 
 export default Vue.extend({
   name: "Map",
@@ -31,8 +32,8 @@ export default Vue.extend({
   data: function() {
     return {
       lMapObj: (null as unknown) as L.Map,
-      layersControl: (null as unknown) as L.Control.Layers,
-      ecoregionsLayer: (null as unknown) as L.GeoJSON,
+      currentOverlayLayer: (null as unknown) as L.GeoJSON,
+      currentOverlayUrl: '',
       initialMapPosition: [
         50.47294859181385,
         4.4839374800019005
@@ -43,10 +44,52 @@ export default Vue.extend({
       loadError: false
     };
   },
+  computed: {
+    availableOverlaysForSelect: function() {
+      const overlays = this.overlaysConf.map(e => {
+        return {
+          text: e.name,
+          value: e.url
+        };
+      });
+
+      overlays.unshift({text: 'None', value: ''});
+      return overlays;
+    }
+  },
   mounted: function() {
     this.initMap(this.initialMapPosition, this.initialZoomLevel);
   },
   watch: {
+    currentOverlayUrl: {
+      handler: function(newVal: string) {
+        if (newVal === "") {
+          this.currentOverlayLayer.removeFrom(this.lMapObj);
+        } else {
+          fetch(newVal)
+            .then(res => res.json())
+            .then(data => {
+              function overlayStyle(): L.PathOptions {
+                return {
+                  fillColor: "red",
+                  weight: 2,
+                  opacity: 1,
+                  color: "white",
+                  dashArray: "2",
+                  fillOpacity: 0.2
+                };
+              }
+
+              this.currentOverlayLayer = L.geoJSON(data, {
+                style: overlayStyle,
+                onEachFeature: this.onEachFeature
+              });
+
+              this.currentOverlayLayer.addTo(this.lMapObj);
+            });
+        }
+      }
+    },
     geotiffUrl: {
       immediate: true,
       handler: function(newVal: string) {
@@ -57,7 +100,7 @@ export default Vue.extend({
   },
   methods: {
     resetHighlight: function(e: L.LeafletEvent) {
-      this.ecoregionsLayer.resetStyle(e.target);
+      this.currentOverlayLayer.resetStyle(e.target);
     },
 
     highlightFeature: function(e: L.LeafletEvent) {
@@ -80,12 +123,12 @@ export default Vue.extend({
     },
 
     onEachFeature: function(feature: geojson.Feature, layer: L.GeoJSON) {
-        layer.on({
-          mouseover: this.highlightFeature,
-          mouseout: this.resetHighlight,
-          click: this.zoomToFeature
-        });
-      },
+      layer.on({
+        mouseover: this.highlightFeature,
+        mouseout: this.resetHighlight,
+        click: this.zoomToFeature
+      });
+    },
     initMap: function(center: LatLngExpression, zoom: number): void {
       this.lMapObj = L.map("map").setView(center, zoom);
 
@@ -94,40 +137,7 @@ export default Vue.extend({
         attribution:
           '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
       }).addTo(this.lMapObj);
-
-      this.layersControl = L.control.layers();
-      this.layersControl.addTo(this.lMapObj);
-
-      this.addOverlays();
     },
-    addOverlays: function(): void {
-      
-
-      function overlayStyle(): L.PathOptions {
-        return {
-          fillColor: "red",
-          weight: 2,
-          opacity: 1,
-          color: "white",
-          dashArray: "2",
-          fillOpacity: 0.2
-        };
-      }
-
-      for (const overlay of this.overlaysConf) {
-        fetch(overlay.url)
-          .then(res => res.json())
-          .then(data => {
-            // FIXME: this only works as long as we have a single overlay layer
-            this.ecoregionsLayer = L.geoJSON(data, {
-              style: overlayStyle,
-              onEachFeature: this.onEachFeature
-            });
-            this.layersControl.addOverlay(this.ecoregionsLayer, overlay.name);
-          });
-      }
-    },
-
     removeExistingGeoTif: function(): void {
       if (this.lMapObj && this.georasterLayer) {
         this.lMapObj.removeLayer(this.georasterLayer);
