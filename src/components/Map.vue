@@ -1,9 +1,16 @@
 <template>
-  <div>
-    <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
-    Overlay: <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
-    <div id="map" style="height: 640px; width: 1110px;" />
-  </div>
+  <b-row>
+    <b-col cols="9">
+      <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
+      <div id="map" style="height: 640px; width: 825px;" />
+    </b-col>
+
+    <b-col cols="3">
+      <h3>Overlays</h3>
+      <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
+      <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
+    </b-col>
+  </b-row>
 </template>
 
 <script lang="ts">
@@ -33,7 +40,8 @@ export default Vue.extend({
     return {
       lMapObj: (null as unknown) as L.Map,
       currentOverlayLayer: (null as unknown) as L.GeoJSON,
-      currentOverlayUrl: '',
+      currentOverlayUrl: "",
+      highlightedFeatureName: "",
       initialMapPosition: [
         50.47294859181385,
         4.4839374800019005
@@ -53,7 +61,7 @@ export default Vue.extend({
         };
       });
 
-      overlays.unshift({text: 'None', value: ''});
+      overlays.unshift({ text: "None", value: "" });
       return overlays;
     }
   },
@@ -69,19 +77,8 @@ export default Vue.extend({
           fetch(newVal)
             .then(res => res.json())
             .then(data => {
-              function overlayStyle(): L.PathOptions {
-                return {
-                  fillColor: "red",
-                  weight: 2,
-                  opacity: 1,
-                  color: "white",
-                  dashArray: "2",
-                  fillOpacity: 0.2
-                };
-              }
-
               this.currentOverlayLayer = L.geoJSON(data, {
-                style: overlayStyle,
+                style: this.overlayStyle,
                 onEachFeature: this.onEachFeature
               });
 
@@ -101,21 +98,32 @@ export default Vue.extend({
   methods: {
     resetHighlight: function(e: L.LeafletEvent) {
       this.currentOverlayLayer.resetStyle(e.target);
+      this.highlightedFeatureName = "";
+    },
+
+    overlayStyle: function(): L.PathOptions {
+      return {
+        fillColor: "red",
+        weight: 2,
+        opacity: 1,
+        color: "white",
+        dashArray: "2",
+        fillOpacity: 0
+      };
     },
 
     highlightFeature: function(e: L.LeafletEvent) {
       const layer = e.target;
 
       layer.setStyle({
-        weight: 5,
-        color: "#666",
-        dashArray: "",
         fillOpacity: 0.7
       });
 
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
       }
+
+      this.highlightedFeatureName = e.target.feature.properties.REGION;
     },
 
     zoomToFeature: function(e: L.LeafletEvent) {
