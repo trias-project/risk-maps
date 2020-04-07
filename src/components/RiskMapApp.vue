@@ -25,16 +25,18 @@ export default Vue.extend({
   name: "RiskMapApp",
   props: {},
   data: function() {
-    return {
-      speciesId: null,
-      availableSpecies: [
+    const species = [
         { value: null, text: "-- Please select a species --", disabled: true },
         // TODO: load available species from (automatically generated) config file
         { value: 3189866, text: "Acer negundo L." },
         { value: 3190653, text: "Ailanthus altissima (Mill.) Swingle" }
-      ],
+      ]
 
-      climateScenarioId: null,
+    return {
+      speciesId: species[2].value, // Replace by first (currently not available because test data)
+      availableSpecies: species,
+
+      climateScenarioId: 'hist',
       availableScenarii: [
         {
           value: null,
@@ -56,7 +58,7 @@ export default Vue.extend({
         }
       ],
 
-      mapTypeId: null,
+      mapTypeId: "",
       availableMapTypes: [
         { value: null, text: "-- Please select a map type --", disabled: true },
         { value: "", text: "risk map" },
