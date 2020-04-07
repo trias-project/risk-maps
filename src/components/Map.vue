@@ -6,6 +6,8 @@
     </b-col>
 
     <b-col cols="3">
+      <label for="opacity">Opacity</label>
+      <b-form-input id="opacity" v-model="georasterLayerOpacity" type="range" min="0" max="1" step="0.01"></b-form-input>
       <h3>Overlays</h3>
       <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
       <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
@@ -48,6 +50,7 @@ export default Vue.extend({
       ] as LatLngExpression,
       initialZoomLevel: 8,
       georasterLayer: (null as unknown) as GeoRasterLayer,
+      georasterLayerOpacity: 0.7,
       colorScale: d3.interpolateSpectral, // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
       loadError: false
     };
@@ -69,6 +72,11 @@ export default Vue.extend({
     this.initMap(this.initialMapPosition, this.initialZoomLevel);
   },
   watch: {
+    georasterLayerOpacity: {
+      handler: function(newVal: number) {
+        this.georasterLayer.setOpacity(newVal);
+      }
+    },
     currentOverlayUrl: {
       handler: function(newVal: string) {
         if (newVal === "") {
@@ -171,7 +179,7 @@ export default Vue.extend({
           parseGeoraster(arrayBuffer).then(georaster => {
             this.georasterLayer = new GeoRasterLayer({
               georaster: georaster,
-              opacity: 0.7,
+              opacity: this.georasterLayerOpacity,
               pixelValuesToColorFn: values => {
                 // no data is represented by very small values (normal range is [0,1])
                 if (values[0] < -10000) {
