@@ -103,11 +103,10 @@ export default Vue.extend({
 
     overlayStyle: function(): L.PathOptions {
       return {
-        fillColor: "red",
+        fillColor: "#DC571D",
         weight: 2,
         opacity: 1,
-        color: "white",
-        dashArray: "2",
+        color: "#DC571D",
         fillOpacity: 0
       };
     },
@@ -116,7 +115,7 @@ export default Vue.extend({
       const layer = e.target;
 
       layer.setStyle({
-        fillOpacity: 0.7
+        fillOpacity: 0.6
       });
 
       if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
