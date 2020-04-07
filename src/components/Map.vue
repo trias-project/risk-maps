@@ -139,11 +139,16 @@ export default Vue.extend({
     initMap: function(center: LatLngExpression, zoom: number): void {
       this.lMapObj = L.map("map").setView(center, zoom);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution:
-          '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-      }).addTo(this.lMapObj);
+      const backgroundLayer = L.tileLayer(
+        "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+        {
+          maxZoom: 19,
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+        }
+      );
+
+      backgroundLayer.addTo(this.lMapObj);
     },
     removeExistingGeoTif: function(): void {
       if (this.lMapObj && this.georasterLayer) {
