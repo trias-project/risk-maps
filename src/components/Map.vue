@@ -48,7 +48,7 @@ export default Vue.extend({
       ] as LatLngExpression,
       initialZoomLevel: 8,
       georasterLayer: (null as unknown) as GeoRasterLayer,
-      colorScale: d3.interpolateViridis, // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
+      colorScale: d3.interpolateSpectral, // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
       loadError: false
     };
   },
