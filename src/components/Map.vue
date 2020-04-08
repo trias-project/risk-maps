@@ -11,12 +11,14 @@
       <h3>Overlays</h3>
       <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
       <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
+      <color-legend :color-scale="colorScale"></color-legend>
     </b-col>
   </b-row>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import ColorLegend from "./ColorLegend.vue";
 import L, { LatLngExpression } from "leaflet";
 import parseGeoraster from "georaster";
 import GeoRasterLayer from "georaster-layer-for-leaflet";
@@ -51,7 +53,7 @@ export default Vue.extend({
       initialZoomLevel: 8,
       georasterLayer: (null as unknown) as GeoRasterLayer,
       georasterLayerOpacity: 0.7,
-      colorScale: d3.interpolateSpectral, // The domain being [0, 1] (identical to the interpolator range), we don't even need a D3 scale here
+      colorScale: d3.scaleSequential(d3.interpolateSpectral).domain([0, 1]),
       loadError: false
     };
   },
@@ -102,6 +104,9 @@ export default Vue.extend({
         this.loadAndAddGeoTif(newVal);
       }
     }
+  },
+  components: {
+    ColorLegend
   },
   methods: {
     resetHighlight: function(e: L.LeafletEvent) {
