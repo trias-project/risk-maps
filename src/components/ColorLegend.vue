@@ -22,13 +22,13 @@ import * as d3 from "d3";
 
 export default Vue.extend({
   name: "ColorLegend",
-  props: ["colorScale"],
+  props: ["colorScale", "opacity"],
   data: function() {
     return {
       styleDiv: {
-        'height': 200,
-        'width': 80,
-        'margin': { top: 10, right: 60, bottom: 10, left: 2 }
+        height: 200,
+        width: 80,
+        margin: { top: 10, right: 60, bottom: 10, left: 2 }
       }
     };
   },
@@ -44,17 +44,52 @@ export default Vue.extend({
       legendAxis(d3.select((el as unknown) as SVGGElement));
     }
   },
-  mounted: function() {
-    const ctx = this.ctx;
-
-    if (ctx != null) {
-      d3.range(this.styleDiv.height).forEach(i => {
-        ctx.fillStyle = this.colorScale(this.legendScale.invert(i));
-        ctx.fillRect(0, i, this.canvasWidth, 1);
-      });
-    } else {
-      // No context??
+  watch: {
+    opacity: {
+      handler: function(newOpacity) {
+        this.clearCanvas();
+        this.renderColorRamp(newOpacity);
+      },
     }
+  },
+  methods: {
+    clearCanvas: function() {
+      const ctx = this.ctx;
+
+      if (ctx != null) {
+        ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+      }
+    },
+    addOpacityToColor: function(colorStr: string, opacity: number): string {
+      const colorObj = d3.color(colorStr);
+      
+      if (colorObj != null) {
+        colorObj.opacity = opacity;
+        return colorObj + "";
+      } else {
+        throw "colorStr is not a correct CSS color specifier";
+      }
+      
+    },
+    renderColorRamp: function(opacity: number) {
+      const ctx = this.ctx;
+
+      if (ctx != null) {
+        d3.range(this.styleDiv.height).forEach(i => {
+          ctx.fillStyle = this.addOpacityToColor(
+            this.colorScale(this.legendScale.invert(i)),
+            opacity
+          );
+          ctx.fillRect(0, i, this.canvasWidth, 1);
+        });
+      } else {
+        throw "No canvas context found";
+      }
+    }
+  },
+
+  mounted: function() {
+    this.renderColorRamp(this.opacity);
   },
   computed: {
     legendScale: function(): d3.ScaleLinear<number, number> {
@@ -75,18 +110,18 @@ export default Vue.extend({
       return {
         display: "inline-block",
         position: "relative",
-        height: this.styleDiv.height + 'px',
-        width: this.styleDiv.width +  'px'
+        height: this.styleDiv.height + "px",
+        width: this.styleDiv.width + "px"
       };
     },
     styleCanvasPrepared: function(): object {
       return {
-        'height': this.canvasHeight +  'px',
-        'width': this.canvasWidth + 'px' ,
-        'border': "1px solid #000",
-        'position': "absolute",
-        'top': this.styleDiv.margin.top + 'px',
-        'left': this.styleDiv.margin.left + 'px'
+        height: this.canvasHeight + "px",
+        width: this.canvasWidth + "px",
+        border: "1px solid #000",
+        position: "absolute",
+        top: this.styleDiv.margin.top + "px",
+        left: this.styleDiv.margin.left + "px"
       };
     },
     canvasWidth: function(): number {
