@@ -28,3 +28,9 @@ Then commit and push, including the `docs` directory. GitHub pages does the rest
 2) Convert to GeoJSON (also reproject and simplify as needed), and keep the result in `public/overlays`. Example:
 
     $ ogr2ogr -f GeoJSON -t_srs crs:84 -simplify 30 public/overlays/ecoregions.geojson source_data/overlays/ecoregions/ecoregions.shp
+
+### Update GeoTiff files
+
+1) Copy received files to `source_data/geotiffs`
+2) Run `$ python prepare_geotiffs` (dependencies: the `pygbif` Python package and the `gdalwarp` command-line utility)
+3) Copy paste the species configuration (from the output of this script to `RiskMapApp.vue` (`data` section)

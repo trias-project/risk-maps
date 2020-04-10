@@ -9,9 +9,8 @@
         </b-form>
       </b-col>
     </b-row>
-    
+
     <Map :geotiff-url="geotiffUrl" :overlays-conf="overlaysConf" />
-    
   </div>
 </template>
 
@@ -26,17 +25,30 @@ export default Vue.extend({
   props: {},
   data: function() {
     const species = [
-        { value: null, text: "-- Please select a species --", disabled: true },
-        // TODO: load available species from (automatically generated) config file
-        { value: 3189866, text: "Acer negundo L." },
-        { value: 3190653, text: "Ailanthus altissima (Mill.) Swingle" }
-      ]
+      { value: null, text: "-- Please select a species --", disabled: true },
+      {
+        value: 3189866,
+        text: "Acer negundo L."
+      },
+      {
+        value: 3190653,
+        text: "Ailanthus altissima (Mill.) Swingle"
+      },
+      {
+        value: 3024109,
+        text: "Amelanchier lamarckii F.G.Schroed."
+      },
+      {
+        value: 3039269,
+        text: "Elaeagnus angustifolia L."
+      }
+    ];
 
     return {
       speciesId: species[2].value, // Replace by first (currently not available because test data)
       availableSpecies: species,
 
-      climateScenarioId: 'hist',
+      climateScenarioId: "hist",
       availableScenarii: [
         {
           value: null,
