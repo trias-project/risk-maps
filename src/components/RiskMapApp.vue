@@ -45,7 +45,7 @@ export default Vue.extend({
     ];
 
     return {
-      speciesId: species[2].value, // Replace by first (currently not available because test data)
+      speciesId: species[1].value,
       availableSpecies: species,
 
       climateScenarioId: "hist",
