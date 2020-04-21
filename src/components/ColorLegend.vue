@@ -96,10 +96,10 @@ export default Vue.extend({
       return d3
         .scaleLinear()
         .range([
-          1,
           this.styleDiv.height -
             this.styleDiv.margin.top -
-            this.styleDiv.margin.bottom
+            this.styleDiv.margin.bottom,
+          1
         ])
         .domain(this.colorScale.domain());
     },
