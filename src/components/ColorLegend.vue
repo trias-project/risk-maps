@@ -7,7 +7,7 @@
       style="position: absolute; left: 0px; top: 0px;"
     >
       <g
-        v-axis="{'scale': legendScale}"
+        v-axis="{'scale': legendScale, 'tickLabels': legendTickLabels}"
         class="axis"
         :transform="`translate(${canvasWidth + 1}, ${styleDiv.margin.top})`"
       />
@@ -22,13 +22,14 @@ import * as d3 from "d3";
 
 export default Vue.extend({
   name: "ColorLegend",
-  props: ["colorScale", "opacity"],
+  props: ["colorScale", "opacity", "topic"],
+
   data: function() {
     return {
       styleDiv: {
         height: 200,
-        width: 80,
-        margin: { top: 10, right: 60, bottom: 10, left: 2 }
+        width: 200,
+        margin: { top: 10, right: 170, bottom: 10, left: 2 }
       }
     };
   },
@@ -36,10 +37,13 @@ export default Vue.extend({
     axis(el, binding): void {
       const scaleFunction = binding.value.scale;
 
+      const tickLabels = binding.value.tickLabels; 
+
       const legendAxis = d3
         .axisRight<number>(scaleFunction)
         .tickSize(6)
-        .ticks(8);
+        .tickFormat((d, i) => tickLabels[i])
+        .ticks(tickLabels.length - 1);
 
       legendAxis(d3.select((el as unknown) as SVGGElement));
     }
@@ -92,6 +96,9 @@ export default Vue.extend({
     this.renderColorRamp(this.opacity);
   },
   computed: {
+    legendTickLabels: function(): string[] {
+      return [`0 - low ${this.topic}`, `1 - high ${this.topic}`]
+    },
     legendScale: function(): d3.ScaleLinear<number, number> {
       return d3
         .scaleLinear()

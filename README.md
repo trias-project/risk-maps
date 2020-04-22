@@ -22,14 +22,14 @@ $ npm run build
 
 Then commit and push, including the `docs` directory. GitHub pages does the rest. 
 
-### Map overlays
+### Adding map overlays
 
 1) Keep source data in `source_data/overlays`
 2) Convert to GeoJSON (also reproject and simplify as needed), and keep the result in `public/overlays`. Example:
 
     $ ogr2ogr -f GeoJSON -t_srs crs:84 -simplify 30 public/overlays/ecoregions.geojson source_data/overlays/ecoregions/ecoregions.shp
 
-### Update GeoTiff files
+### Updating GeoTiff files
 
 1) Copy received files to `source_data/geotiffs`
 2) Run `$ python prepare_geotiffs` (dependencies: the `pygbif` Python package and the `gdalwarp` command-line utility)

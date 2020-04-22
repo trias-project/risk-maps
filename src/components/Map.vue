@@ -11,7 +11,7 @@
       <h3>Overlays</h3>
       <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
       <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
-      <color-legend :color-scale="colorScale" :opacity="georasterLayerOpacity"></color-legend>
+      <color-legend :color-scale="colorScale" :opacity="georasterLayerOpacity" :topic="topic"></color-legend>
     </b-col>
   </b-row>
 </template>
@@ -38,6 +38,9 @@ export default Vue.extend({
     overlaysConf: {
       type: Array as () => OverlayConf[],
       default: () => []
+    },
+    topic: {
+      type: String
     }
   },
   data: function() {
@@ -52,6 +55,7 @@ export default Vue.extend({
       ] as LatLngExpression,
       initialZoomLevel: 8,
       georasterLayer: (null as unknown) as GeoRasterLayer,
+      georasterTopic: 'risk',
       georasterLayerOpacity: 0.7,
       colorScale: d3.scaleSequential(d3.interpolateTurbo).domain([0, 1]), // TODO: add typescript definition to avoid this error (+ the one in pixelsValuesToColorFn) (see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/38939)
       loadError: false

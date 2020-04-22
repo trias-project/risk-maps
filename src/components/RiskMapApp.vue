@@ -10,7 +10,7 @@
       </b-col>
     </b-row>
 
-    <Map :geotiff-url="geotiffUrl" :overlays-conf="overlaysConf" />
+    <Map :geotiff-url="geotiffUrl" :overlays-conf="overlaysConf" :topic="mapTopic" />
   </div>
 </template>
 
@@ -90,6 +90,13 @@ export default Vue.extend({
   },
   methods: {},
   computed: {
+    mapTopic: function(): string {
+      switch(this.mapTypeId) {
+        case 'diff': return 'risk difference';
+        case 'conf': return 'confidence' ;
+        default: return 'risk';
+      }
+    },
     overlaysConf: function(): OverlayConf[] {
       return [{ filename: "ecoregions.geojson", label: "Ecoregions" }].map(
         e => {
