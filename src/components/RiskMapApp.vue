@@ -3,14 +3,40 @@
     <b-row class="my-3">
       <b-col>
         <b-form>
-          <b-form-select v-model="speciesId" :options="availableSpecies" size="sm"></b-form-select>
-          <b-form-select v-model="climateScenarioId" :options="availableScenarii" size="sm"></b-form-select>
-          <b-form-select v-model="mapTypeId" :options="availableMapTypes" size="sm"></b-form-select>
+          <b-form-group label-cols="2" label="Species">
+            <b-form-select v-model="speciesId" :options="availableSpecies" size="sm"></b-form-select>
+          </b-form-group>
+
+          <b-form-group label-cols="2" label="Show">
+            <b-form-radio-group
+              id="btn-radios-1"
+              v-model="modelOrRealized"
+              :options="modelOrRealizedOptions"
+              buttons
+              button-variant="outline-primary"
+              size="sm"
+              name="radios-btn-default"
+            ></b-form-radio-group>
+          </b-form-group>
+
+          <b-form-group label-cols="2" label="Model scenario">
+            <b-form-select v-model="climateScenarioId" :options="availableScenarii" size="sm" :disabled="modelOrRealized !== 'model'"></b-form-select>
+          </b-form-group>
+          
+          <b-form-group label-cols="2" label="Model type">
+            <b-form-select v-model="mapTypeId" :options="availableMapTypes" size="sm" :disabled="modelOrRealized !== 'model'"> </b-form-select>
+          </b-form-group>  
         </b-form>
       </b-col>
     </b-row>
 
-    <Map :geotiff-url="geotiffUrl" :overlays-conf="overlaysConf" :topic="mapTopic" />
+    <Map
+      :geotiff-url="geotiffUrl"
+      :overlays-conf="overlaysConf"
+      :topic="mapTopic"
+      :taxonId="speciesId"
+      :gbifMode="modelOrRealized !== 'model'"
+    />
   </div>
 </template>
 
@@ -25,7 +51,6 @@ export default Vue.extend({
   props: {},
   data: function() {
     const species = [
-      { value: null, text: "-- Please select a species --", disabled: true },
       {
         value: 3189866,
         text: "Acer negundo L."
@@ -50,11 +75,6 @@ export default Vue.extend({
 
       climateScenarioId: "hist",
       availableScenarii: [
-        {
-          value: null,
-          text: "-- Please select an scenario --",
-          disabled: true
-        },
         { value: "hist", text: "model based on historical climate data" },
         {
           value: "rcp26",
@@ -72,7 +92,6 @@ export default Vue.extend({
 
       mapTypeId: "",
       availableMapTypes: [
-        { value: null, text: "-- Please select a map type --", disabled: true },
         { value: "", text: "risk map" },
         {
           value: "diff",
@@ -85,16 +104,25 @@ export default Vue.extend({
         }
       ],
 
+      modelOrRealized: "model",
+      modelOrRealizedOptions: [
+        { text: "Model", value: "model" },
+        { text: "Realized (GBIF) Distribution", value: "realized" }
+      ],
+
       publicPath: process.env.BASE_URL
     };
   },
   methods: {},
   computed: {
     mapTopic: function(): string {
-      switch(this.mapTypeId) {
-        case 'diff': return 'risk difference';
-        case 'conf': return 'confidence' ;
-        default: return 'risk';
+      switch (this.mapTypeId) {
+        case "diff":
+          return "risk difference";
+        case "conf":
+          return "confidence";
+        default:
+          return "risk";
       }
     },
     overlaysConf: function(): OverlayConf[] {

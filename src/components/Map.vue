@@ -7,11 +7,11 @@
 
     <b-col cols="3">
       <label for="opacity">Opacity</label>
-      <b-form-input id="opacity" v-model="georasterLayerOpacity" type="range" min="0" max="1" step="0.01"></b-form-input>
+      <b-form-input id="opacity" v-model="dataLayerOpacity" type="range" min="0" max="1" step="0.01"></b-form-input>
       <h3>Overlays</h3>
       <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
       <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
-      <color-legend :color-scale="colorScale" :opacity="georasterLayerOpacity" :topic="topic"></color-legend>
+      <color-legend v-if="gbifMode === false" :color-scale="colorScale" :opacity="dataLayerOpacity" :topic="topic"></color-legend>
     </b-col>
   </b-row>
 </template>
@@ -41,6 +41,12 @@ export default Vue.extend({
     },
     topic: {
       type: String
+    },
+    taxonId: {
+      type: Number
+    },
+    gbifMode: {
+      type: Boolean // If true, the distribution of taxonId is shown instead of the Geotiff
     }
   },
   data: function() {
@@ -55,13 +61,30 @@ export default Vue.extend({
       ] as LatLngExpression,
       initialZoomLevel: 8,
       georasterLayer: (null as unknown) as GeoRasterLayer,
+      gbifLayer: (null as unknown) as L.TileLayer, 
       georasterTopic: 'risk',
-      georasterLayerOpacity: 0.7,
+      dataLayerOpacity: 0.7,
       colorScale: d3.scaleSequential(d3.interpolateTurbo).domain([0, 1]), // TODO: add typescript definition to avoid this error (+ the one in pixelsValuesToColorFn) (see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/38939)
       loadError: false
     };
   },
   computed: {
+    gbifApiURL: function(): string {
+      return `https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?
+        taxonKey=${this.taxonId}
+        &bin=hex
+        &hexPerTile=30
+        &style=purpleYellow.poly
+        &country=BE
+        &basisOfRecord=OBSERVATION
+        &basisOfRecord=HUMAN_OBSERVATION
+        &basisOfRecord=MACHINE_OBSERVATION
+        &basisOfRecord=MATERIAL_SAMPLE
+        &basisOfRecord=PRESERVED_SPECIMEN
+        &basisOfRecord=LIVING_SPECIMEN
+        &basisOfRecord=LITERATURE`.replace(/ /g, '')
+    },
+
     availableOverlaysForSelect: function() {
       const overlays = this.overlaysConf.map(e => {
         return {
@@ -78,9 +101,27 @@ export default Vue.extend({
     this.initMap(this.initialMapPosition, this.initialZoomLevel);
   },
   watch: {
-    georasterLayerOpacity: {
+    gbifMode: {
+      handler: function(newModeIsGbif: boolean) {
+        if (newModeIsGbif) {
+          this.removeExistingGeoTif();
+          this.gbifLayer = L.tileLayer(this.gbifApiURL, {opacity: this.dataLayerOpacity});
+          this.gbifLayer.addTo(this.lMapObj);
+        } else {
+          this.gbifLayer.removeFrom(this.lMapObj)
+          this.loadAndAddGeoTif(this.geotiffUrl)
+        }
+      }
+    },
+    dataLayerOpacity: {
       handler: function(newVal: number) {
-        this.georasterLayer.setOpacity(newVal);
+        if (this.georasterLayer) {
+          this.georasterLayer.setOpacity(newVal);
+        }
+        if (this.gbifLayer) {
+          this.gbifLayer.setOpacity(newVal);
+        }
+        
       }
     },
     currentOverlayUrl: {
@@ -188,7 +229,7 @@ export default Vue.extend({
           parseGeoraster(arrayBuffer).then(georaster => {
             this.georasterLayer = new GeoRasterLayer({
               georaster: georaster,
-              opacity: this.georasterLayerOpacity,
+              opacity: this.dataLayerOpacity,
               pixelValuesToColorFn: values => {
                 // no data is represented by very small values (normal range is [0,1])
                 if (values[0] < -10000) {
