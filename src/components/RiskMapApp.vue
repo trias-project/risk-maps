@@ -107,7 +107,7 @@ export default Vue.extend({
       modelOrRealized: "model",
       modelOrRealizedOptions: [
         { text: "Model", value: "model" },
-        { text: "Realized (GBIF) Distribution", value: "realized" }
+        { text: "Realized (GBIF) distribution", value: "realized" }
       ],
 
       publicPath: process.env.BASE_URL

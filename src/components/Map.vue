@@ -6,6 +6,10 @@
     </b-col>
 
     <b-col cols="3">
+      <h3 class="my-2">Overlays</h3>
+      <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
+      <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
+      <h3 class="my-2">Data layer</h3>
       <label for="opacity">Opacity</label>
       <b-form-input
         id="opacity"
@@ -15,9 +19,6 @@
         max="1"
         step="0.01"
       ></b-form-input>
-      <h3>Overlays</h3>
-      <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
-      <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
       <color-legend
         v-if="gbifMode === false"
         :color-scale="colorScale"
