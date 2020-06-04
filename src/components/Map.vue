@@ -50,7 +50,7 @@ export default Vue.extend({
     },
     overlaysConf: {
       type: Array as () => OverlayConf[],
-      default: () => []
+      default: (): OverlayConf[] => []
     },
     topic: {
       type: String
@@ -98,7 +98,7 @@ export default Vue.extend({
     },
 
     availableOverlaysForSelect: function() {
-      const overlays = this.overlaysConf.map(e => {
+      const overlays = this.overlaysConf.map((e: OverlayConf) => {
         return {
           text: e.name,
           value: e.url
