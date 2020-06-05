@@ -12,6 +12,7 @@
       <h3 class="my-2">Data layer</h3>
       <label for="opacity">Model opacity</label>
       <b-form-input
+        :disabled="!showGeotiffLayer"
         id="opacity"
         v-model="geotifDataLayerOpacity"
         type="range"
