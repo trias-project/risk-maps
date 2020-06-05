@@ -10,10 +10,10 @@
       <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
       <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
       <h3 class="my-2">Data layer</h3>
-      <label for="opacity">Opacity</label>
+      <label for="opacity">Model opacity</label>
       <b-form-input
         id="opacity"
-        v-model="dataLayerOpacity"
+        v-model="geotifDataLayerOpacity"
         type="range"
         min="0"
         max="1"
@@ -22,7 +22,7 @@
       <color-legend
         v-if="showGeotiffLayer"
         :color-scale="colorScale"
-        :opacity="dataLayerOpacity"
+        :opacity="geotifDataLayerOpacity"
         :topic="topic"
       ></color-legend>
     </b-col>
@@ -79,7 +79,7 @@ export default Vue.extend({
       gbifDataLayer: (null as unknown) as L.TileLayer,
       geotifDataLayer: (null as unknown) as GeoRasterLayer,
       georasterTopic: "risk",
-      dataLayerOpacity: 0.7,
+      geotifDataLayerOpacity: 0.7,
       colorScale: d3.scaleSequential(d3.interpolateTurbo).domain([0, 1]), // TODO: add typescript definition to avoid this error (+ the one in pixelsValuesToColorFn) (see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/38939)
       loadError: false
     };
@@ -138,11 +138,9 @@ export default Vue.extend({
         }
       }
     },
-    dataLayerOpacity: {
+    geotifDataLayerOpacity: {
       handler: function(newVal: number) {
-        [this.gbifDataLayer, this.geotifDataLayer].map(l => {
-          l.setOpacity(newVal);
-        })
+        this.geotifDataLayer.setOpacity(newVal);
       }
     },
     currentOverlayUrl: {
@@ -229,7 +227,7 @@ export default Vue.extend({
     },
     prepareGbifLayer: function(): void {
       this.gbifDataLayer = L.tileLayer(this.gbifApiURL, {
-        opacity: this.dataLayerOpacity
+        opacity: 0.9
       });
     },
     prepareGeotifLayer: function(url: string): void {
@@ -248,7 +246,7 @@ export default Vue.extend({
           parseGeoraster(arrayBuffer).then(georaster => {
             this.geotifDataLayer = new GeoRasterLayer({
               georaster: georaster,
-              opacity: this.dataLayerOpacity,
+              opacity: this.geotifDataLayerOpacity,
               pixelValuesToColorFn: values => {
                 // no data is represented by very small values (normal range is [0,1])
                 if (values[0] < -10000) {
