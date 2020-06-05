@@ -20,11 +20,11 @@
           </b-form-group>
 
           <b-form-group label-cols="2" label="Model scenario">
-            <b-form-select v-model="climateScenarioId" :options="availableScenarii" size="sm" :disabled="modelOrRealized !== 'model'"></b-form-select>
+            <b-form-select v-model="climateScenarioId" :options="availableScenarii" size="sm" :disabled="!modelCurrentlyVisible"></b-form-select>
           </b-form-group>
           
           <b-form-group label-cols="2" label="Model type">
-            <b-form-select v-model="mapTypeId" :options="availableMapTypes" size="sm" :disabled="modelOrRealized !== 'model'"> </b-form-select>
+            <b-form-select v-model="mapTypeId" :options="availableMapTypes" size="sm" :disabled="!modelCurrentlyVisible"> </b-form-select>
           </b-form-group>  
         </b-form>
       </b-col>
@@ -35,7 +35,8 @@
       :overlays-conf="overlaysConf"
       :topic="mapTopic"
       :taxonId="speciesId"
-      :gbifMode="modelOrRealized !== 'model'"
+      :showGbifLayer="gbifCurrentlyVisible"
+      :showGeotiffLayer="modelCurrentlyVisible"
     />
   </div>
 </template>
@@ -107,7 +108,8 @@ export default Vue.extend({
       modelOrRealized: "model",
       modelOrRealizedOptions: [
         { text: "Model", value: "model" },
-        { text: "Realized (GBIF) distribution", value: "realized" }
+        { text: "Realized (GBIF) distribution", value: "realized" },
+        { text: "Both (surimposed)", value: "both" }
       ],
 
       publicPath: process.env.BASE_URL
@@ -115,6 +117,12 @@ export default Vue.extend({
   },
   methods: {},
   computed: {
+    modelCurrentlyVisible: function(): boolean {
+      return (this.modelOrRealized === 'realized' ? false : true)
+    },
+    gbifCurrentlyVisible: function(): boolean {
+      return (this.modelOrRealized === 'model' ? false : true)
+    },
     mapTopic: function(): string {
       switch (this.mapTypeId) {
         case "diff":

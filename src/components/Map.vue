@@ -20,7 +20,7 @@
         step="0.01"
       ></b-form-input>
       <color-legend
-        v-if="gbifMode === false"
+        v-if="showGeotiffLayer"
         :color-scale="colorScale"
         :opacity="dataLayerOpacity"
         :topic="topic"
@@ -58,8 +58,11 @@ export default Vue.extend({
     taxonId: {
       type: Number
     },
-    gbifMode: {
-      type: Boolean // If true, the distribution of taxonId is shown instead of the Geotiff
+    showGbifLayer: {
+      type: Boolean
+    },
+    showGeotiffLayer: {
+      type: Boolean
     }
   },
   data: function() {
@@ -73,7 +76,8 @@ export default Vue.extend({
         4.4839374800019005
       ] as LatLngExpression,
       initialZoomLevel: 8,
-      currentDataLayer: (null as unknown) as L.TileLayer | GeoRasterLayer,
+      gbifDataLayer: (null as unknown) as L.TileLayer,
+      geotifDataLayer: (null as unknown) as GeoRasterLayer,
       georasterTopic: "risk",
       dataLayerOpacity: 0.7,
       colorScale: d3.scaleSequential(d3.interpolateTurbo).domain([0, 1]), // TODO: add typescript definition to avoid this error (+ the one in pixelsValuesToColorFn) (see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/38939)
@@ -86,7 +90,7 @@ export default Vue.extend({
         taxonKey=${this.taxonId}
         &bin=hex
         &hexPerTile=30
-        &style=purpleYellow.poly
+        &style=green.poly
         &country=BE
         &basisOfRecord=OBSERVATION
         &basisOfRecord=HUMAN_OBSERVATION
@@ -111,18 +115,34 @@ export default Vue.extend({
   },
   mounted: function() {
     this.initMap(this.initialMapPosition, this.initialZoomLevel);
+    this.prepareGbifLayer();
+    this.prepareGeotifLayer(this.geotiffUrl);
   },
   watch: {
-    gbifMode: {
-      handler: function() {
-        this.renderDataLayer();
+    showGeotiffLayer: {
+      handler: function(newVal: boolean) {
+        if (newVal === true) {
+          this.geotifDataLayer.addTo(this.lMapObj);
+        } else {
+          this.geotifDataLayer.removeFrom(this.lMapObj);
+        }
+      }
+    },
+    showGbifLayer: {
+      handler: function(newVal: boolean) {
+        if (newVal === true) {
+          this.gbifDataLayer.addTo(this.lMapObj);
+          this.gbifDataLayer.bringToFront();
+        } else {
+          this.gbifDataLayer.removeFrom(this.lMapObj);
+        }
       }
     },
     dataLayerOpacity: {
       handler: function(newVal: number) {
-        if (this.currentDataLayer) {
-          this.currentDataLayer.setOpacity(newVal);
-        }
+        [this.gbifDataLayer, this.geotifDataLayer].map(l => {
+          l.setOpacity(newVal);
+        })
       }
     },
     currentOverlayUrl: {
@@ -144,9 +164,8 @@ export default Vue.extend({
       }
     },
     geotiffUrl: {
-      immediate: true,
-      handler: function() {
-        this.renderDataLayer();
+      handler: function(newUrl: string) {
+        this.prepareGeotifLayer(newUrl);
       }
     }
   },
@@ -208,26 +227,12 @@ export default Vue.extend({
 
       backgroundLayer.addTo(this.lMapObj);
     },
-    renderDataLayer: function() {
-      this.removeDataLayer();
-      if (this.gbifMode) {
-        this.loadAndAddGbif();
-      } else {
-        this.loadAndAddGeoTif(this.geotiffUrl);
-      }
-    },
-    removeDataLayer: function(): void {
-      if (this.lMapObj && this.currentDataLayer) {
-        this.lMapObj.removeLayer(this.currentDataLayer);
-      }
-    },
-    loadAndAddGbif: function(): void {
-      this.currentDataLayer = L.tileLayer(this.gbifApiURL, {
+    prepareGbifLayer: function(): void {
+      this.gbifDataLayer = L.tileLayer(this.gbifApiURL, {
         opacity: this.dataLayerOpacity
       });
-      this.currentDataLayer.addTo(this.lMapObj);
     },
-    loadAndAddGeoTif: function(url: string): void {
+    prepareGeotifLayer: function(url: string): void {
       const handleErrors = function(response: Response) {
         if (!response.ok) {
           throw Error(response.statusText);
@@ -241,7 +246,7 @@ export default Vue.extend({
         })
         .then(arrayBuffer => {
           parseGeoraster(arrayBuffer).then(georaster => {
-            this.currentDataLayer = new GeoRasterLayer({
+            this.geotifDataLayer = new GeoRasterLayer({
               georaster: georaster,
               opacity: this.dataLayerOpacity,
               pixelValuesToColorFn: values => {
@@ -254,9 +259,11 @@ export default Vue.extend({
               },
               resolution: 64 // optional parameter for adjusting display resolution
             });
-            this.currentDataLayer.addTo(this.lMapObj);
 
-            this.lMapObj.fitBounds(this.currentDataLayer.getBounds());
+            if(this.showGeotiffLayer) {
+              this.geotifDataLayer.addTo(this.lMapObj);
+            }
+
             this.loadError = false;
           });
         })
