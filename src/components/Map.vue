@@ -167,6 +167,18 @@ export default Vue.extend({
         this.geotifDataLayer.removeFrom(this.lMapObj);
         this.prepareGeotifLayer(newUrl); // (will also add it, if needed)
       }
+    },
+    taxonId: {
+      handler: function() {
+        if (this.gbifDataLayer) {
+          this.gbifDataLayer.removeFrom(this.lMapObj);
+        }
+        this.prepareGbifLayer();
+        if (this.showGbifLayer) {
+          this.gbifDataLayer.addTo(this.lMapObj);
+          this.gbifDataLayer.bringToFront();
+        }
+      }
     }
   },
   components: {
