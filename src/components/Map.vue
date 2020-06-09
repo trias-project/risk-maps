@@ -2,7 +2,11 @@
   <b-row>
     <b-col cols="9">
       <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
-      <div id="map" style="height: 640px; width: 825px;" />
+      <div style="height: 640px">
+        <div style="height: 100%; width: 100%;">
+          <div id="map" style="height: 100%" />
+        </div>
+      </div>
     </b-col>
 
     <b-col cols="3">
