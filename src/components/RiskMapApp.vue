@@ -155,9 +155,9 @@ export default Vue.extend({
 
       modelOrRealized: "model",
       modelOrRealizedOptions: [
-        { text: "Model", value: "model" },
-        { text: "Realized (GBIF) distribution", value: "realized" },
-        { text: "Both (surimposed)", value: "both" }
+        { text: "Modelled data", value: "model" },
+        { text: "Occurrence data", value: "realized" },
+        { text: "Both", value: "both" }
       ],
 
       publicPath: process.env.BASE_URL
