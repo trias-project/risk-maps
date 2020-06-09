@@ -164,7 +164,8 @@ export default Vue.extend({
     },
     geotiffUrl: {
       handler: function(newUrl: string) {
-        this.prepareGeotifLayer(newUrl);
+        this.geotifDataLayer.removeFrom(this.lMapObj);
+        this.prepareGeotifLayer(newUrl); // (will also add it, if needed)
       }
     }
   },
