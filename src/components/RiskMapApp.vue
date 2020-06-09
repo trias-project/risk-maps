@@ -52,23 +52,71 @@ export default Vue.extend({
   props: {},
   data: function() {
     const species = [
-      {
-        value: 3189866,
-        text: "Acer negundo L."
-      },
-      {
-        value: 3190653,
-        text: "Ailanthus altissima (Mill.) Swingle"
-      },
-      {
-        value: 3024109,
-        text: "Amelanchier lamarckii F.G.Schroed."
-      },
-      {
-        value: 3039269,
-        text: "Elaeagnus angustifolia L."
-      }
-    ];
+  {
+    "value": 3189866,
+    "text": "Acer negundo L."
+  },
+  {
+    "value": 3190653,
+    "text": "Ailanthus altissima (Mill.) Swingle"
+  },
+  {
+    "value": 3024109,
+    "text": "Amelanchier lamarckii F.G.Schroed."
+  },
+  {
+    "value": 3039269,
+    "text": "Elaeagnus angustifolia L."
+  },
+  {
+    "value": 2891783,
+    "text": "Impatiens balfourii Hook.f."
+  },
+  {
+    "value": 2891774,
+    "text": "Impatiens capensis Meerb."
+  },
+  {
+    "value": 2891770,
+    "text": "Impatiens glandulifera Royle"
+  },
+  {
+    "value": 3003709,
+    "text": "Rosa glauca Pourr."
+  },
+  {
+    "value": 7501634,
+    "text": "Rosa multiflora Murray"
+  },
+  {
+    "value": 2992543,
+    "text": "Rubus laciniatus Willd."
+  },
+  {
+    "value": 2993761,
+    "text": "Rubus spectabilis Pursh"
+  },
+  {
+    "value": 9202318,
+    "text": "Symphyotrichum lanceolatum (Willd.) G.L.Nesom"
+  },
+  {
+    "value": 3151618,
+    "text": "Symphyotrichum novae-angliae (L.) G.L.Nesom"
+  },
+  {
+    "value": 3151558,
+    "text": "Symphyotrichum novi-belgii (L.) G.L.Nesom"
+  },
+  {
+    "value": 2882849,
+    "text": "Vaccinium corymbosum L."
+  },
+  {
+    "value": 7777960,
+    "text": "Vaccinium macrocarpum Ait."
+  }
+];
 
     return {
       speciesId: species[1].value,
