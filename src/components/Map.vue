@@ -12,7 +12,7 @@
     <b-col cols="3">
       <h3 class="my-2">Overlays</h3>
       <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
-      <p v-if="highlightedFeatureName">Highlighted feature: {{ highlightedFeatureName }}</p>
+      <b-alert :variant="highlightedAlertVariant" class="my-2" :show="overlayLayerVisible"><small>Highlighted: {{ highlightedFeatureName }}</small></b-alert>
       <h3 class="my-2">Data layer</h3>
       <label for="opacity">Model opacity</label>
       <b-form-input
@@ -46,6 +46,8 @@ window["proj4"] = proj4.default; // Is proj4 (implicitly) needed?
 import { OverlayConf } from "../interfaces";
 import * as geojson from "geojson";
 
+const noHiglightedFeatureString = 'None';
+
 export default Vue.extend({
   name: "Map",
   props: {
@@ -75,7 +77,7 @@ export default Vue.extend({
       lMapObj: (null as unknown) as L.Map,
       currentOverlayLayer: (null as unknown) as L.GeoJSON,
       currentOverlayUrl: "",
-      highlightedFeatureName: "",
+      highlightedFeatureName: noHiglightedFeatureString,
       initialMapPosition: [
         50.47294859181385,
         4.4839374800019005
@@ -90,6 +92,18 @@ export default Vue.extend({
     };
   },
   computed: {
+    highlightedAlertVariant: function(): string {
+      if (this.highlightedFeatureName === noHiglightedFeatureString) {
+        return 'dark'
+      } else {
+        return 'primary'
+      }
+    },
+
+    overlayLayerVisible: function(): boolean {
+      return (this.currentOverlayLayer != null);
+    },
+
     gbifApiURL: function(): string {
       return `https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?
         taxonKey=${this.taxonId}
@@ -152,6 +166,7 @@ export default Vue.extend({
       handler: function(newVal: string) {
         if (newVal === "") {
           this.currentOverlayLayer.removeFrom(this.lMapObj);
+          this.currentOverlayLayer = (null as unknown) as L.GeoJSON;
         } else {
           fetch(newVal)
             .then(res => res.json())
@@ -191,7 +206,7 @@ export default Vue.extend({
   methods: {
     resetHighlight: function(e: L.LeafletEvent) {
       this.currentOverlayLayer.resetStyle(e.target);
-      this.highlightedFeatureName = "";
+      this.highlightedFeatureName = noHiglightedFeatureString;
     },
 
     overlayStyle: function(): L.PathOptions {
