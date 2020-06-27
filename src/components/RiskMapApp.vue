@@ -131,11 +131,11 @@ export default Vue.extend({
         },
         {
           value: "rcp45",
-          text: "model based on climate forecasts under RCP 4.5 for 2040-2071"
+          text: "model based on climate forecasts under RCP 4.5 for 2040-2070"
         },
         {
           value: "rcp85",
-          text: "model based on climate forecasts under RCP 8.5 for 2040-2072"
+          text: "model based on climate forecasts under RCP 8.5 for 2040-2070"
         }
       ],
 
