@@ -233,15 +233,10 @@ export default Vue.extend({
       this.highlightedFeatureName = e.target.feature.properties.REGION;
     },
 
-    zoomToFeature: function(e: L.LeafletEvent) {
-      this.lMapObj.fitBounds(e.target.getBounds());
-    },
-
     onEachFeature: function(feature: geojson.Feature, layer: L.GeoJSON) {
       layer.on({
         mouseover: this.highlightFeature,
-        mouseout: this.resetHighlight,
-        click: this.zoomToFeature
+        mouseout: this.resetHighlight
       });
     },
     initMap: function(center: LatLngExpression, zoom: number): void {
