@@ -37,7 +37,7 @@
 <script lang="ts">
 import Vue from "vue";
 import ColorLegend from "./ColorLegend.vue";
-import L, { LatLngExpression, TileLayer } from "leaflet";
+import L, { LatLngExpression } from "leaflet";
 import parseGeoraster from "georaster";
 import GeoRasterLayer from "georaster-layer-for-leaflet";
 import * as d3 from "d3";
@@ -55,6 +55,10 @@ export default Vue.extend({
       type: String,
       default: null
     },
+    occurrencesUrl: {
+      type: String,
+      default: null
+    },
     overlaysConf: {
       type: Array as () => OverlayConf[],
       default: (): OverlayConf[] => []
@@ -62,10 +66,7 @@ export default Vue.extend({
     topic: {
       type: String
     },
-    taxonId: {
-      type: Number
-    },
-    showGbifLayer: {
+    showOccurrenceLayer: {
       type: Boolean
     },
     showGeotiffLayer: {
@@ -83,7 +84,7 @@ export default Vue.extend({
         4.4839374800019005
       ] as LatLngExpression,
       initialZoomLevel: 8,
-      gbifDataLayer: (null as unknown) as L.TileLayer,
+      occurrenceLayer: (null as unknown) as L.GeoJSON,
       geotifDataLayer: (null as unknown) as GeoRasterLayer,
       georasterTopic: "risk",
       geotifDataLayerOpacity: 0.7,
@@ -104,22 +105,6 @@ export default Vue.extend({
       return (this.currentOverlayLayer != null);
     },
 
-    gbifApiURL: function(): string {
-      return `https://api.gbif.org/v2/map/occurrence/density/{z}/{x}/{y}@1x.png?
-        taxonKey=${this.taxonId}
-        &bin=hex
-        &hexPerTile=30
-        &style=green.poly
-        &country=BE
-        &basisOfRecord=OBSERVATION
-        &basisOfRecord=HUMAN_OBSERVATION
-        &basisOfRecord=MACHINE_OBSERVATION
-        &basisOfRecord=MATERIAL_SAMPLE
-        &basisOfRecord=PRESERVED_SPECIMEN
-        &basisOfRecord=LIVING_SPECIMEN
-        &basisOfRecord=LITERATURE`.replace(/ /g, "");
-    },
-
     availableOverlaysForSelect: function() {
       const overlays = this.overlaysConf.map((e: OverlayConf) => {
         return {
@@ -134,7 +119,7 @@ export default Vue.extend({
   },
   mounted: function() {
     this.initMap(this.initialMapPosition, this.initialZoomLevel);
-    this.prepareGbifLayer();
+    this.prepareOccurrenceLayer(this.occurrencesUrl);
     this.prepareGeotifLayer(this.geotiffUrl);
   },
   watch: {
@@ -147,13 +132,13 @@ export default Vue.extend({
         }
       }
     },
-    showGbifLayer: {
+    showOccurrenceLayer: {
       handler: function(newVal: boolean) {
         if (newVal === true) {
-          this.gbifDataLayer.addTo(this.lMapObj);
-          this.gbifDataLayer.bringToFront();
+          this.occurrenceLayer.addTo(this.lMapObj);
+          this.occurrenceLayer.bringToFront();
         } else {
-          this.gbifDataLayer.removeFrom(this.lMapObj);
+          this.occurrenceLayer.removeFrom(this.lMapObj);
         }
       }
     },
@@ -185,20 +170,14 @@ export default Vue.extend({
       handler: function(newUrl: string) {
         this.geotifDataLayer.removeFrom(this.lMapObj);
         this.prepareGeotifLayer(newUrl); // (will also add it, if needed)
+      },
+    },
+    occurrencesUrl: {
+      handler: function(newUrl: string) {
+        this.occurrenceLayer.removeFrom(this.lMapObj);
+        this.prepareOccurrenceLayer(newUrl);
       }
     },
-    taxonId: {
-      handler: function() {
-        if (this.gbifDataLayer) {
-          this.gbifDataLayer.removeFrom(this.lMapObj);
-        }
-        this.prepareGbifLayer();
-        if (this.showGbifLayer) {
-          this.gbifDataLayer.addTo(this.lMapObj);
-          this.gbifDataLayer.bringToFront();
-        }
-      }
-    }
   },
   components: {
     ColorLegend
@@ -253,10 +232,19 @@ export default Vue.extend({
 
       backgroundLayer.addTo(this.lMapObj);
     },
-    prepareGbifLayer: function(): void {
-      this.gbifDataLayer = L.tileLayer(this.gbifApiURL, {
-        opacity: 0.9
+    prepareOccurrenceLayer: function(url: string): void {
+      fetch(url)
+        .then(function(response) {
+          return response.json();
+        })
+      .then((data) => {
+        this.occurrenceLayer = L.geoJSON(data);
+
+        if(this.showOccurrenceLayer) {
+          this.occurrenceLayer.addTo(this.lMapObj);
+        }
       });
+
     },
     prepareGeotifLayer: function(url: string): void {
       const handleErrors = function(response: Response) {

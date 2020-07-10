@@ -32,10 +32,10 @@
 
     <Map
       :geotiff-url="geotiffUrl"
+      :occurrences-url="occurrencesUrl"
       :overlays-conf="overlaysConf"
       :topic="mapTopic"
-      :taxonId="speciesId"
-      :showGbifLayer="gbifCurrentlyVisible"
+      :showOccurrenceLayer="occurrencesCurrentlyVisible"
       :showGeotiffLayer="modelCurrentlyVisible"
     />
   </div>
@@ -168,7 +168,7 @@ export default Vue.extend({
     modelCurrentlyVisible: function(): boolean {
       return (this.modelOrRealized === 'realized' ? false : true)
     },
-    gbifCurrentlyVisible: function(): boolean {
+    occurrencesCurrentlyVisible: function(): boolean {
       return (this.modelOrRealized === 'model' ? false : true)
     },
     mapTopic: function(): string {
@@ -190,6 +190,9 @@ export default Vue.extend({
           };
         }
       );
+    },
+    occurrencesUrl: function(): string {
+      return `${this.publicPath}occurrences/be_${this.speciesId}_occurrences.geojson`;
     },
     geotiffUrl: function(): string {
       if (this.selectionMade) {
