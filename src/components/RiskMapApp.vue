@@ -182,11 +182,16 @@ export default Vue.extend({
       }
     },
     overlaysConf: function(): OverlayConf[] {
-      return [{ filename: "ecoregions.geojson", label: "Ecoregions" }].map(
+      return [
+        { filename: "ecoregions.geojson", label: "Ecoregions", keyProperty: 'REGION', nameProperty: 'REGION' },
+        { filename: "bioregions.geojson", label: "Bioregions", keyProperty: 'PK_UID', nameProperty: 'name' }
+        ].map( // The features that have the same 'REGION' property will be highlighted together
         e => {
           return {
             url: `${this.publicPath}overlays/${e.filename}`,
-            name: e.label
+            name: e.label,
+            keyProperty: e.keyProperty,
+            nameProperty: e.nameProperty
           };
         }
       );

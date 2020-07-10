@@ -12,7 +12,9 @@
     <b-col cols="3">
       <h3 class="my-2">Overlays</h3>
       <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
-      <b-alert :variant="highlightedAlertVariant" class="my-2" :show="overlayLayerVisible"><small>Highlighted: {{ highlightedFeatureName }}</small></b-alert>
+      <b-alert :variant="highlightedAlertVariant" class="my-2" :show="overlayLayerVisible">
+        <small>Highlighted: {{ highlightedFeatureName }}</small>
+      </b-alert>
       <h3 class="my-2">Data layer</h3>
       <label for="opacity">Model opacity</label>
       <b-form-input
@@ -46,7 +48,7 @@ window["proj4"] = proj4.default; // Is proj4 (implicitly) needed?
 import { OverlayConf } from "../interfaces";
 import * as geojson from "geojson";
 
-const noHiglightedFeatureString = 'None';
+const noHiglightedFeatureString = "None";
 
 export default Vue.extend({
   name: "Map",
@@ -79,6 +81,7 @@ export default Vue.extend({
       currentOverlayLayer: (null as unknown) as L.GeoJSON,
       currentOverlayUrl: "",
       highlightedFeatureName: noHiglightedFeatureString,
+      highlightedFeatureKeyValue: "", // Overlays: features with the same value will be highlighted together
       initialMapPosition: [
         50.47294859181385,
         4.4839374800019005
@@ -93,16 +96,22 @@ export default Vue.extend({
     };
   },
   computed: {
+    currentOverlayConf: function(): OverlayConf | undefined {
+      return this.overlaysConf.find(e => {
+        return e.url === this.currentOverlayUrl;
+      });
+    },
+
     highlightedAlertVariant: function(): string {
       if (this.highlightedFeatureName === noHiglightedFeatureString) {
-        return 'dark'
+        return "dark";
       } else {
-        return 'primary'
+        return "primary";
       }
     },
 
     overlayLayerVisible: function(): boolean {
-      return (this.currentOverlayLayer != null);
+      return this.currentOverlayLayer != null;
     },
 
     availableOverlaysForSelect: function() {
@@ -170,22 +179,24 @@ export default Vue.extend({
       handler: function(newUrl: string) {
         this.geotifDataLayer.removeFrom(this.lMapObj);
         this.prepareGeotifLayer(newUrl); // (will also add it, if needed)
-      },
+      }
     },
     occurrencesUrl: {
       handler: function(newUrl: string) {
         this.occurrenceLayer.removeFrom(this.lMapObj);
         this.prepareOccurrenceLayer(newUrl);
       }
-    },
+    }
   },
   components: {
     ColorLegend
   },
   methods: {
     resetHighlight: function() {
-      this.currentOverlayLayer.resetStyle(); 
+      this.currentOverlayLayer.resetStyle();
       this.highlightedFeatureName = noHiglightedFeatureString;
+
+      this.highlightedFeatureKeyValue = "";
     },
 
     overlayStyle: function(): L.PathOptions {
@@ -199,22 +210,31 @@ export default Vue.extend({
     },
 
     highlightFeature: function(e: L.LeafletEvent) {
-      this.highlightedFeatureName = e.target.feature.properties.REGION;
+      if (this.currentOverlayConf) {
+        this.highlightedFeatureName =
+          e.target.feature.properties[this.currentOverlayConf.nameProperty];
+        this.highlightedFeatureKeyValue =
+          e.target.feature.properties[this.currentOverlayConf.keyProperty];
 
-      // All the features with the same name (polder...) are highlighted together
-      // @ts-ignore: layer is L.GeoJSON, but the leaflet type definitions suggest it's a basic Layer object
-      this.currentOverlayLayer.eachLayer((layer: L.GeoJSON) => {
-          // @ts-ignore
-          if (layer.feature.properties.REGION == this.highlightedFeatureName) { 
-          layer.setStyle({ 
-            fillOpacity: 0.6
-          });
+        // All the features with the same name (polder...) are highlighted together
+        // @ts-ignore: layer is L.GeoJSON, but the leaflet type definitions suggest it's a basic Layer object
 
-          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { 
-            layer.bringToFront(); // @ts-ignore
+        this.currentOverlayLayer.eachLayer((layer: L.GeoJSON) => {
+          if (
+            // @ts-ignore
+            layer.feature.properties[this.currentOverlayConf.keyProperty] ==
+            this.highlightedFeatureKeyValue
+          ) {
+            layer.setStyle({
+              fillOpacity: 0.6
+            });
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+              layer.bringToFront();
+            }
           }
-        }
-      });
+        });
+      }
     },
 
     onEachFeature: function(feature: geojson.Feature, layer: L.GeoJSON) {
@@ -242,14 +262,13 @@ export default Vue.extend({
         .then(function(response) {
           return response.json();
         })
-      .then((data) => {
-        this.occurrenceLayer = L.geoJSON(data);
+        .then(data => {
+          this.occurrenceLayer = L.geoJSON(data);
 
-        if(this.showOccurrenceLayer) {
-          this.occurrenceLayer.addTo(this.lMapObj);
-        }
-      });
-
+          if (this.showOccurrenceLayer) {
+            this.occurrenceLayer.addTo(this.lMapObj);
+          }
+        });
     },
     prepareGeotifLayer: function(url: string): void {
       const handleErrors = function(response: Response) {
@@ -279,7 +298,7 @@ export default Vue.extend({
               resolution: 64 // optional parameter for adjusting display resolution
             });
 
-            if(this.showGeotiffLayer) {
+            if (this.showGeotiffLayer) {
               this.geotifDataLayer.addTo(this.lMapObj);
             }
 
