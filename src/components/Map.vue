@@ -183,8 +183,8 @@ export default Vue.extend({
     ColorLegend
   },
   methods: {
-    resetHighlight: function(e: L.LeafletEvent) {
-      this.currentOverlayLayer.resetStyle(e.target);
+    resetHighlight: function() {
+      this.currentOverlayLayer.resetStyle(); 
       this.highlightedFeatureName = noHiglightedFeatureString;
     },
 
@@ -199,17 +199,22 @@ export default Vue.extend({
     },
 
     highlightFeature: function(e: L.LeafletEvent) {
-      const layer = e.target;
-
-      layer.setStyle({
-        fillOpacity: 0.6
-      });
-
-      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-        layer.bringToFront();
-      }
-
       this.highlightedFeatureName = e.target.feature.properties.REGION;
+
+      // All the features with the same name (polder...) are highlighted together
+      // @ts-ignore: layer is L.GeoJSON, but the leaflet type definitions suggest it's a basic Layer object
+      this.currentOverlayLayer.eachLayer((layer: L.GeoJSON) => {
+          // @ts-ignore
+          if (layer.feature.properties.REGION == this.highlightedFeatureName) { 
+          layer.setStyle({ 
+            fillOpacity: 0.6
+          });
+
+          if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { 
+            layer.bringToFront(); // @ts-ignore
+          }
+        }
+      });
     },
 
     onEachFeature: function(feature: geojson.Feature, layer: L.GeoJSON) {
