@@ -158,10 +158,12 @@ export default Vue.extend({
     },
     currentOverlayUrl: {
       handler: function(newVal: string) {
-        if (newVal === "") {
+        if (this.currentOverlayLayer) {
           this.currentOverlayLayer.removeFrom(this.lMapObj);
           this.currentOverlayLayer = (null as unknown) as L.GeoJSON;
-        } else {
+        }
+        
+        if (newVal !== "") {
           fetch(newVal)
             .then(res => res.json())
             .then(data => {
