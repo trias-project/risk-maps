@@ -4,6 +4,7 @@
 import pandas as pd
 import geopandas as gpd
 import fiona
+import fiona.crs
 import pprint
 import os
 import json

@@ -50,73 +50,105 @@ import { OverlayConf } from "../interfaces";
 export default Vue.extend({
   name: "RiskMapApp",
   props: {},
-  data: function() {
+  data: function () {
     const species = [
-  {
-    "value": 3189866,
-    "text": "Acer negundo L."
-  },
-  {
-    "value": 3190653,
-    "text": "Ailanthus altissima (Mill.) Swingle"
-  },
-  {
-    "value": 3024109,
-    "text": "Amelanchier lamarckii F.G.Schroed."
-  },
-  {
-    "value": 3039269,
-    "text": "Elaeagnus angustifolia L."
-  },
-  {
-    "value": 2891783,
-    "text": "Impatiens balfourii Hook.f."
-  },
-  {
-    "value": 2891774,
-    "text": "Impatiens capensis Meerb."
-  },
-  {
-    "value": 2891770,
-    "text": "Impatiens glandulifera Royle"
-  },
-  {
-    "value": 3003709,
-    "text": "Rosa glauca Pourr."
-  },
-  {
-    "value": 7501634,
-    "text": "Rosa multiflora Murray"
-  },
-  {
-    "value": 2992543,
-    "text": "Rubus laciniatus Willd."
-  },
-  {
-    "value": 2993761,
-    "text": "Rubus spectabilis Pursh"
-  },
-  {
-    "value": 9202318,
-    "text": "Symphyotrichum lanceolatum (Willd.) G.L.Nesom"
-  },
-  {
-    "value": 3151618,
-    "text": "Symphyotrichum novae-angliae (L.) G.L.Nesom"
-  },
-  {
-    "value": 3151558,
-    "text": "Symphyotrichum novi-belgii (L.) G.L.Nesom"
-  },
-  {
-    "value": 2882849,
-    "text": "Vaccinium corymbosum L."
-  },
-  {
-    "value": 7777960,
-    "text": "Vaccinium macrocarpum Ait."
-  }
-];
+      {
+        "value": 2489010,
+        "text": "Acridotheres cristatellus (Linnaeus, 1758)"
+      },
+      {
+        "value": 2498388,
+        "text": "Aix galericulata (Linnaeus, 1758)"
+      },
+      {
+        "value": 2498387,
+        "text": "Aix sponsa (Linnaeus, 1758)"
+      },
+      {
+        "value": 2498110,
+        "text": "Anas sibilatrix Poeppig, 1829"
+      },
+      {
+        "value": 5281901,
+        "text": "Campylopus introflexus Bridel, 1819"
+      },
+      {
+        "value": 3663237,
+        "text": "Cornus sanguinea subsp. australis (C.A.Mey.) J\u00e1v."
+      },
+      {
+        "value": 8421432,
+        "text": "Cornus sanguinea subsp. hungarica (K\u00e1rp\u00e1ti) So\u00f3"
+      },
+      {
+        "value": 3082244,
+        "text": "Cornus sericea L."
+      },
+      {
+        "value": 2715482,
+        "text": "Cyperus eragrostis Lam."
+      },
+      {
+        "value": 2716226,
+        "text": "Cyperus esculentus L."
+      },
+      {
+        "value": 5220136,
+        "text": "Dama dama (Linnaeus, 1758)"
+      },
+      {
+        "value": 2891783,
+        "text": "Impatiens balfourii Hook.f."
+      },
+      {
+        "value": 2891774,
+        "text": "Impatiens capensis Meerb."
+      },
+      {
+        "value": 2891770,
+        "text": "Impatiens glandulifera Royle"
+      },
+      {
+        "value": 2891782,
+        "text": "Impatiens parviflora DC."
+      },
+      {
+        "value": 3003709,
+        "text": "Rosa glauca Pourr."
+      },
+      {
+        "value": 3003244,
+        "text": "Rosa multiflora Thunb."
+      },
+      {
+        "value": 2992543,
+        "text": "Rubus laciniatus Willd."
+      },
+      {
+        "value": 2993761,
+        "text": "Rubus spectabilis Pursh"
+      },
+      {
+        "value": 9202318,
+        "text": "Symphyotrichum lanceolatum (Willd.) G.L.Nesom"
+      },
+      {
+        "value": 3151618,
+        "text": "Symphyotrichum novae-angliae (L.) G.L.Nesom"
+      },
+      {
+        "value": 3151558,
+        "text": "Symphyotrichum novi-belgii (L.) G.L.Nesom"
+      },
+      {
+        "value": 2882849,
+        "text": "Vaccinium corymbosum L."
+      },
+      {
+        "value": 7777960,
+        "text": "Vaccinium macrocarpum Ait."
+      }
+    ];
 
     return {
       speciesId: species[1].value,
@@ -165,13 +197,13 @@ export default Vue.extend({
   },
   methods: {},
   computed: {
-    modelCurrentlyVisible: function(): boolean {
+    modelCurrentlyVisible: function (): boolean {
       return (this.modelOrRealized === 'realized' ? false : true)
     },
-    occurrencesCurrentlyVisible: function(): boolean {
+    occurrencesCurrentlyVisible: function (): boolean {
       return (this.modelOrRealized === 'model' ? false : true)
     },
-    mapTopic: function(): string {
+    mapTopic: function (): string {
       switch (this.mapTypeId) {
         case "diff":
           return "risk difference";
@@ -181,11 +213,11 @@ export default Vue.extend({
           return "risk";
       }
     },
-    overlaysConf: function(): OverlayConf[] {
+    overlaysConf: function (): OverlayConf[] {
       return [
         { filename: "ecoregions.geojson", label: "Ecoregions", keyProperty: 'REGION', nameProperty: 'REGION' },
         { filename: "bioregions.geojson", label: "Bioregions", keyProperty: 'PK_UID', nameProperty: 'name' }
-        ].map( // The features that have the same 'REGION' property will be highlighted together
+      ].map( // The features that have the same 'REGION' property will be highlighted together
         e => {
           return {
             url: `${this.publicPath}overlays/${e.filename}`,
@@ -196,10 +228,10 @@ export default Vue.extend({
         }
       );
     },
-    occurrencesUrl: function(): string {
+    occurrencesUrl: function (): string {
       return `${this.publicPath}occurrences/be_${this.speciesId}_occurrences.geojson`;
     },
-    geotiffUrl: function(): string {
+    geotiffUrl: function (): string {
       if (this.selectionMade) {
         if (this.mapTypeId === "") {
           return `${this.publicPath}geotiffs/be_${this.speciesId}_${this.climateScenarioId}.4326.tif`;
@@ -210,7 +242,7 @@ export default Vue.extend({
         return "";
       }
     },
-    selectionMade: function(): boolean {
+    selectionMade: function (): boolean {
       return this.climateScenarioId != null &&
         this.speciesId != null &&
         this.mapTypeId != null
