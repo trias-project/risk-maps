@@ -22,7 +22,7 @@ Build with:
 npm run build
 ```
 
-Then commit and push, including the `docs` directory. GitHub pages does the rest. 
+Then commit and push, including the `docs` directory. GitHub pages does the rest and will serve the site at <https://trias-project.github.io/risk-maps/>.
 
 ### Adding map overlays
 
