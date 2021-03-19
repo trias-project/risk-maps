@@ -11,10 +11,11 @@
     <footer class="bg-dark text-muted">
       <b-container>
         <b-row>
-          <b-col lg>
-            Created by the <a href="https://oscibio.inbo.be">Open science lab for biodiversity</a>
+          <b-col cols="9">
+            Created by the <a href="https://oscibio.inbo.be">Open science lab for biodiversity</a> for 
+            <a href="http://trias-project.be">Tracking Invasive Alien Species (TrIAS)</a>.
           </b-col>
-          <b-col lg class="text-right">
+          <b-col cols="3" class="text-right">
             <a href="https://github.com/trias-project/risk-maps/">Source code</a> version 
             <code><a href="#">x</a></code>
           </b-col>
