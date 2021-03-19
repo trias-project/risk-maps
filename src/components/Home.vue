@@ -250,10 +250,10 @@ export default Vue.extend({
   methods: {},
   computed: {
     modelCurrentlyVisible: function (): boolean {
-      return (this.modelOrRealized === 'realized' ? false : true)
+      return (this.modelOrRealized === "realized" ? false : true)
     },
     occurrencesCurrentlyVisible: function (): boolean {
-      return (this.modelOrRealized === 'model' ? false : true)
+      return (this.modelOrRealized === "model" ? false : true)
     },
     mapTopic: function (): string {
       switch (this.mapTypeId) {
@@ -267,8 +267,8 @@ export default Vue.extend({
     },
     overlaysConf: function (): OverlayConf[] {
       return [
-        { filename: "ecoregions.geojson", label: "Ecoregions", keyProperty: 'REGION', nameProperty: 'REGION' },
-        { filename: "bioregions.geojson", label: "Bioregions", keyProperty: 'PK_UID', nameProperty: 'name' }
+        { filename: "ecoregions.geojson", label: "Ecoregions", keyProperty: "REGION", nameProperty: "REGION" },
+        { filename: "bioregions.geojson", label: "Bioregions", keyProperty: "PK_UID", nameProperty: "name" }
       ].map( // The features that have the same 'REGION' property will be highlighted together
         e => {
           return {

@@ -55,7 +55,7 @@ for filename in os.listdir(SOURCE_DIR):
     # Only applies to content that looks like Amy's GeoTiffs
     if filename.startswith("be_"):
         # 2.1 Keep track of all encountered species
-        species_id = filename.split('_')[1]
+        species_id = filename.split("_")[1]
         species_ids.add(species_id)
 
         # 2.2 Reproject the file and save it to DESTINATION_DIR
@@ -75,10 +75,10 @@ create_occurrence_geojsons(species_ids, destination_dir=OCCURRENCES_DESTINATION_
 # 4. Get species data and generate configuration:
 species_conf = []
 for species_id in species_ids:
-    sn = species.name_usage(key=species_id)['scientificName']
-    species_conf.append({'value': int(species_id), 'text': sn})
+    sn = species.name_usage(key=species_id)["scientificName"]
+    species_conf.append({"value": int(species_id), "text": sn})
 
-species_conf = sorted(species_conf, key=lambda k: k['text'])
+species_conf = sorted(species_conf, key=lambda k: k["text"])
 print("Species configuration (to copy-paste in config file): ")
 print("======================================================")
 print(json.dumps(species_conf, indent=2))
