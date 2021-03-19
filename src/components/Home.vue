@@ -1,5 +1,8 @@
 <template>
   <main>
+    <b-container class="mt-3 d-none">
+      <p>Disclaimer ...</p>
+    </b-container>
     <b-container fluid>
       <b-row>
         <b-col class="bg-dark text-light pt-3">
