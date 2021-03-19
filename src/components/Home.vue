@@ -1,45 +1,70 @@
 <template>
-    <b-row class="my-3">
-      <b-col>
-        <b-form>
-          <b-form-group label-cols="2" label="Species">
-            <b-form-select v-model="speciesId" :options="availableSpecies" size="sm"></b-form-select>
-          </b-form-group>
   <main>
     <b-container fluid>
+      <b-row>
+        <b-col class="bg-dark text-light pt-3">
+          <b-form>
+            <b-row>
+              <b-col lg="7">
+                <b-form-group label="Species" label-cols="3">
+                  <b-form-select
+                    v-model="speciesId"
+                    :options="availableSpecies"
+                    size="sm"
+                  ></b-form-select>
+                </b-form-group>
+              </b-col>
 
-          <b-form-group label-cols="2" label="Show">
-            <b-form-radio-group
-              id="btn-radios-1"
-              v-model="modelOrRealized"
-              :options="modelOrRealizedOptions"
-              buttons
-              button-variant="outline-primary"
-              size="sm"
-              name="radios-btn-default"
-            ></b-form-radio-group>
-          </b-form-group>
+              <b-col lg="5">
+                <b-form-group label="Show" label-cols="3">
+                  <b-form-radio-group
+                    id="btn-radios-1"
+                    v-model="modelOrRealized"
+                    :options="modelOrRealizedOptions"
+                    buttons
+                    button-variant="outline-primary"
+                    size="sm"
+                    name="radios-btn-default"
+                  ></b-form-radio-group>
+                </b-form-group>
+              </b-col>
+            </b-row>
 
-          <b-form-group label-cols="2" label="Model scenario">
-            <b-form-select v-model="climateScenarioId" :options="availableScenarii" size="sm" :disabled="!modelCurrentlyVisible"></b-form-select>
-          </b-form-group>
-          
-          <b-form-group label-cols="2" label="Model type">
-            <b-form-select v-model="mapTypeId" :options="availableMapTypes" size="sm" :disabled="!modelCurrentlyVisible"> </b-form-select>
-          </b-form-group>  
-        </b-form>
-      </b-col>
-    </b-row>
+            <b-row>
+              <b-col lg="7">
+                <b-form-group label="Model scenario" label-cols="3">
+                  <b-form-select
+                    v-model="climateScenarioId"
+                    :options="availableScenarii"
+                    size="sm"
+                    :disabled="!modelCurrentlyVisible"
+                  ></b-form-select>
+                </b-form-group>
+              </b-col>
 
-    <Map
-      :geotiff-url="geotiffUrl"
-      :occurrences-url="occurrencesUrl"
-      :overlays-conf="overlaysConf"
-      :topic="mapTopic"
-      :showOccurrenceLayer="occurrencesCurrentlyVisible"
-      :showGeotiffLayer="modelCurrentlyVisible"
-    />
-  </div>
+              <b-col lg="5">
+                <b-form-group label="Model type" label-cols="3">
+                  <b-form-select
+                    v-model="mapTypeId"
+                    :options="availableMapTypes"
+                    size="sm"
+                    :disabled="!modelCurrentlyVisible"
+                  ></b-form-select>
+                </b-form-group>
+              </b-col>
+            </b-row>
+          </b-form>
+        </b-col>
+      </b-row>
+
+      <Map
+        :geotiff-url="geotiffUrl"
+        :occurrences-url="occurrencesUrl"
+        :overlays-conf="overlaysConf"
+        :topic="mapTopic"
+        :showOccurrenceLayer="occurrencesCurrentlyVisible"
+        :showGeotiffLayer="modelCurrentlyVisible"
+      />
     </b-container>
   </main>
 </template>
