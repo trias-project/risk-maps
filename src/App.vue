@@ -15,7 +15,7 @@
             Created by the <a href="https://oscibio.inbo.be">Open science lab for biodiversity</a>
           </b-col>
           <b-col lg class="text-right">
-            <a href="https://github.com/trias-project/risk-maps/">Source code </a> version 
+            <a href="https://github.com/trias-project/risk-maps/">Source code</a> version 
             <code><a href="#">x</a></code>
           </b-col>
         </b-row>
