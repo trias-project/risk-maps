@@ -37,6 +37,12 @@ export default Vue.extend({
 </script>
 
 <style>
+main {
+  min-height: calc(
+    100vh - 54px
+  ); /* Viewport height minus medium screen navbar height, to push footer to bottom */
+  padding-bottom: 30px; /* Don't stick to footer */
+}
 /* Colours and style */
 .navbar {
   background-color: white!important;

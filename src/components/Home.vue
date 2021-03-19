@@ -1,11 +1,12 @@
 <template>
-  <div>
     <b-row class="my-3">
       <b-col>
         <b-form>
           <b-form-group label-cols="2" label="Species">
             <b-form-select v-model="speciesId" :options="availableSpecies" size="sm"></b-form-select>
           </b-form-group>
+  <main>
+    <b-container fluid>
 
           <b-form-group label-cols="2" label="Show">
             <b-form-radio-group
@@ -39,6 +40,8 @@
       :showGeotiffLayer="modelCurrentlyVisible"
     />
   </div>
+    </b-container>
+  </main>
 </template>
 
 <script lang="ts">
