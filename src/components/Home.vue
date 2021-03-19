@@ -335,12 +335,3 @@ export default Vue.extend({
   }
 });
 </script>
-
-<style scoped>
-@import "../../node_modules/leaflet/dist/leaflet.css";
-
-div#map {
-  width: 800px;
-  height: 600px;
-}
-</style>

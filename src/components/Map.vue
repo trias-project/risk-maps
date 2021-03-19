@@ -2,11 +2,7 @@
   <b-row>
     <b-col cols="9">
       <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
-      <div style="height: 640px">
-        <div style="height: 100%; width: 100%;">
-          <div id="map" style="height: 100%" />
-        </div>
-      </div>
+      <div id="map"></div>
     </b-col>
 
     <b-col cols="3">
@@ -314,3 +310,11 @@ export default Vue.extend({
   }
 });
 </script>
+
+<style scoped>
+@import "../../node_modules/leaflet/dist/leaflet.css";
+#map {
+  height: 640px;
+}
+
+</style>
