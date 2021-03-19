@@ -73,6 +73,14 @@ export default Vue.extend({
         "text": "Campylopus introflexus Bridel, 1819"
       },
       {
+        "value": 5189032,
+        "text": "Corbicula fluminalis (O.F.M\u00fcller, 1774)"
+      },
+      {
+        "value": 8190231,
+        "text": "Corbicula fluminea (O.F.M\u00fcller, 1774)"
+      },
+      {
         "value": 3663237,
         "text": "Cornus sanguinea subsp. australis (C.A.Mey.) J\u00e1v."
       },
@@ -97,8 +105,16 @@ export default Vue.extend({
         "text": "Dama dama (Linnaeus, 1758)"
       },
       {
+        "value": 8745918,
+        "text": "Deroceras invadens Reise, Hutchinson, Schunack & Schlitt, 2011"
+      },
+      {
+        "value": 7190901,
+        "text": "Graptemys pseudogeographica pseudogeographica"
+      },
+      {
         "value": 2891783,
-        "text": "Impatiens balfourii Hook.f."
+        "text": "Impatiens balfourii Hook.fil."
       },
       {
         "value": 2891774,
@@ -111,6 +127,34 @@ export default Vue.extend({
       {
         "value": 2891782,
         "text": "Impatiens parviflora DC."
+      },
+      {
+        "value": 9291405,
+        "text": "Massylaea vermiculata (O.F.M\u00fcller, 1774)"
+      },
+      {
+        "value": 2479407,
+        "text": "Myiopsitta monachus (Boddaert, 1783)"
+      },
+      {
+        "value": 2455523,
+        "text": "Orthriophis taeniurus (Cope, 1861)"
+      },
+      {
+        "value": 9185677,
+        "text": "Podarcis siculus (Rafinesque-schmaltz, 1810)"
+      },
+      {
+        "value": 5192470,
+        "text": "Potamopyrgus antipodarum (Gray, 1843)"
+      },
+      {
+        "value": 5229055,
+        "text": "Psittacula eupatria (Linnaeus, 1766)"
+      },
+      {
+        "value": 2479226,
+        "text": "Psittacula krameri (Scopoli, 1769)"
       },
       {
         "value": 3003709,
@@ -129,6 +173,10 @@ export default Vue.extend({
         "text": "Rubus spectabilis Pursh"
       },
       {
+        "value": 4559541,
+        "text": "Sinanodonta woodiana (I.Lea, 1834)"
+      },
+      {
         "value": 9202318,
         "text": "Symphyotrichum lanceolatum (Willd.) G.L.Nesom"
       },
@@ -141,12 +189,16 @@ export default Vue.extend({
         "text": "Symphyotrichum novi-belgii (L.) G.L.Nesom"
       },
       {
+        "value": 7826906,
+        "text": "Thectocercus acuticaudatus (Vieillot, 1818)"
+      },
+      {
         "value": 2882849,
         "text": "Vaccinium corymbosum L."
       },
       {
         "value": 7777960,
-        "text": "Vaccinium macrocarpum Ait."
+        "text": "Vaccinium macrocarpum Aiton"
       }
     ];
 
