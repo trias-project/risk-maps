@@ -1,14 +1,13 @@
 <template>
   <div id="app">
-    <b-container fluid>
-      <b-navbar type="light" variant="light" toggleable="lg">
-        <b-navbar-brand>TriAS risk maps</b-navbar-brand>
-      </b-navbar>
-    </b-container>
+    <b-navbar type="light" variant="light">
+      <b-container>
+        <b-navbar-brand>TrIAS risk maps</b-navbar-brand>
+      </b-container>
+    </b-navbar>
+    
+    <Home />
 
-    <b-container>
-      <Home />
-    </b-container>
   </div>
 </template>
 
@@ -24,3 +23,10 @@ export default Vue.extend({
 });
 </script>
 
+<style>
+/* Colours and style */
+.navbar {
+  background-color: white!important;
+  border-bottom: 1px solid #e9ecef;
+}
+</style>
