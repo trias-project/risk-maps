@@ -25,7 +25,7 @@
                     v-model="modelOrRealized"
                     :options="modelOrRealizedOptions"
                     buttons
-                    button-variant="outline-primary"
+                    button-variant="outline-secondary"
                     size="sm"
                     name="radios-btn-default"
                   ></b-form-radio-group>
