@@ -48,7 +48,7 @@ import Map from "./Map.vue";
 import { OverlayConf } from "../interfaces";
 
 export default Vue.extend({
-  name: "RiskMapApp",
+  name: "Home",
   props: {},
   data: function () {
     const species = [

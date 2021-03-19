@@ -7,19 +7,20 @@
     </b-container>
 
     <b-container>
-      <RiskMapApp />
+      <Home />
     </b-container>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import RiskMapApp from "./components/RiskMapApp.vue";
+import Home from "@/components/Home.vue";
 
 export default Vue.extend({
   name: "App",
   components: {
-    RiskMapApp
+    Home
   }
 });
 </script>
+
