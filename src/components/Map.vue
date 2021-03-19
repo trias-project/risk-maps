@@ -1,33 +1,40 @@
 <template>
-  <b-row>
+  <b-row class="bg-light py-3">
     <b-col cols="9">
       <b-alert :show="loadError" variant="warning">GeoTiff missing for this selection</b-alert>
       <div id="map"></div>
     </b-col>
-
     <b-col cols="3">
-      <h3 class="my-2">Overlays</h3>
-      <b-form-select v-model="currentOverlayUrl" :options="availableOverlaysForSelect" size="sm"></b-form-select>
-      <b-alert :variant="highlightedAlertVariant" class="my-2" :show="overlayLayerVisible">
-        <small>Highlighted: {{ highlightedFeatureName }}</small>
-      </b-alert>
-      <h3 class="my-2">Data layer</h3>
-      <label for="opacity">Model opacity</label>
-      <b-form-input
-        :disabled="!showGeotiffLayer"
-        id="opacity"
-        v-model="geotifDataLayerOpacity"
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-      ></b-form-input>
-      <color-legend
-        v-if="showGeotiffLayer"
-        :color-scale="colorScale"
-        :opacity="geotifDataLayerOpacity"
-        :topic="topic"
-      ></color-legend>
+      <b-form>
+        <b-form-group label="Overlays">
+          <b-form-select
+            v-model="currentOverlayUrl"
+            :options="availableOverlaysForSelect"
+            size="sm"
+          ></b-form-select>
+          <b-form-text id="highlightedRegion">
+            {{ highlightedFeatureName }}
+          </b-form-text>
+        </b-form-group>
+
+        <b-form-group label="Data layer opacity">
+          <b-form-input
+            :disabled="!showGeotiffLayer"
+            id="opacity"
+            v-model="geotifDataLayerOpacity"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+          ></b-form-input>
+          <color-legend
+            v-if="showGeotiffLayer"
+            :color-scale="colorScale"
+            :opacity="geotifDataLayerOpacity"
+            :topic="topic"
+          ></color-legend>
+        </b-form-group>
+      </b-form>
     </b-col>
   </b-row>
 </template>
@@ -44,7 +51,7 @@ window["proj4"] = proj4.default; // Is proj4 (implicitly) needed?
 import { OverlayConf } from "../interfaces";
 import * as geojson from "geojson";
 
-const noHiglightedFeatureString = "None";
+const noHiglightedFeatureString = "";
 
 export default Vue.extend({
   name: "Map",
@@ -96,14 +103,6 @@ export default Vue.extend({
       return this.overlaysConf.find(e => {
         return e.url === this.currentOverlayUrl;
       });
-    },
-
-    highlightedAlertVariant: function(): string {
-      if (this.highlightedFeatureName === noHiglightedFeatureString) {
-        return "dark";
-      } else {
-        return "primary";
-      }
     },
 
     overlayLayerVisible: function(): boolean {
@@ -193,7 +192,6 @@ export default Vue.extend({
     resetHighlight: function() {
       this.currentOverlayLayer.resetStyle();
       this.highlightedFeatureName = noHiglightedFeatureString;
-
       this.highlightedFeatureKeyValue = "";
     },
 
@@ -317,4 +315,7 @@ export default Vue.extend({
   height: 640px;
 }
 
+#highlightedRegion {
+  min-height: 30px; /* So this block has height even without a highlighted region */
+}
 </style>
