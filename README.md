@@ -43,3 +43,4 @@ This process will also update occurrences based on the latest version of the dat
 
 ## License
 
+[MIT License](LICENSE)
