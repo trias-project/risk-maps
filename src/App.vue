@@ -17,7 +17,7 @@
           </b-col>
           <b-col cols="3" class="text-right">
             <a href="https://github.com/trias-project/risk-maps/">Source code</a> version 
-            <code><a href="#">x</a></code>
+            <code><a :href="'https://github.com/trias-project/risk-maps/tree/' + commitHash()">{{ commitHash() }}</a></code>
           </b-col>
         </b-row>
       </b-container>
@@ -29,10 +29,17 @@
 import Vue from "vue";
 import Home from "@/components/Home.vue";
 
+declare const __COMMIT_HASH__: string;
+
 export default Vue.extend({
   name: "App",
   components: {
     Home
+  },
+  methods: {
+    commitHash: function (): string {
+      return __COMMIT_HASH__;
+    },
   }
 });
 </script>

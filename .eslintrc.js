@@ -1,9 +1,12 @@
 module.exports = {
+  globals: {
+    "__COMMIT_HASH__": true
+  },
   root: true,
   env: {
     node: true
   },
-  "extends": [
+  extends: [
     "plugin:vue/essential",
     "eslint:recommended",
     "@vue/typescript/recommended"
