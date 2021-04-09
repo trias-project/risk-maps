@@ -32,6 +32,7 @@ Then commit and push, including the `docs` directory. GitHub pages does the rest
 ```
 $ ogr2ogr -f GeoJSON -t_srs crs:84 -simplify 30 public/overlays/ecoregions.geojson source_data/overlays/ecoregions/ecoregions.shp
 ```
+3. Add a configuration entry to `Home.vue`
 
 ### Updating GeoTiff files
 

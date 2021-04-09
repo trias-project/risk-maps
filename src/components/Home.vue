@@ -299,7 +299,8 @@ export default Vue.extend({
     overlaysConf: function (): OverlayConf[] {
       return [
         { filename: "ecoregions.geojson", label: "Ecoregions", keyProperty: "REGION", nameProperty: "REGION" },
-        { filename: "bioregions.geojson", label: "Bioregions", keyProperty: "PK_UID", nameProperty: "name" }
+        { filename: "bioregions.geojson", label: "Bioregions", keyProperty: "PK_UID", nameProperty: "name" },
+        { filename: "drainage_basins.geojson", label: "Drainage basins", keyProperty: "name", nameProperty: "name"},
       ].map( // The features that have the same 'REGION' property will be highlighted together
         e => {
           return {
