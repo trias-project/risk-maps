@@ -12,6 +12,8 @@ import json
 dirname = os.path.dirname(__file__)
 
 MIN_COORD_UNCERTAINTY_SMALLER_OR_EQUAL_TO = 1000
+MIN_YEAR = 1976
+MAX_YEAR = 2020
 BELGIAN_ALIEN_CUBE_URL = "https://raw.githubusercontent.com/trias-project/occ-cube-alien/master/data/processed/be_alientaxa_cube.csv"
 OUTPUT_EPSG = "4326"
 
@@ -53,8 +55,8 @@ def _save_empty_geojson_file(fn):
         json.dump({"type": "FeatureCollection", "features": []}, outfile)
 
 
-def create_occurrence_geojsons(taxa_ids, destination_dir):
-    """Takes a list of taxon ids"""
+def create_occurrence_geojsons(destination_dir):
+    """Returns the list of all processed taxon IDs"""
     print("Downloading Belgian Alien data cube...", end="")
     cube = _get_cube()
     print("done.")
@@ -68,7 +70,15 @@ def create_occurrence_geojsons(taxa_ids, destination_dir):
     cube = cube[cube["min_coord_uncertainty"] <= MIN_COORD_UNCERTAINTY_SMALLER_OR_EQUAL_TO]
     print("done.")
 
-    for taxon_id in taxa_ids:
+    print(f"Filtering cube for relevant years")
+    cube = cube[cube["year"] >= MIN_YEAR]
+    cube = cube[cube["year"] <= MAX_YEAR]
+    print("done")
+
+    taxa_ids = []
+
+    for taxon_id in cube["taxonKey"].unique():
+        taxa_ids.append(int(taxon_id))
         print(f"Building dataframe for taxon {taxon_id}...", end="")
         output_df = _build_output_df_for_taxon(taxon_id, cube, eea_grid)
         print("done.")
@@ -83,3 +93,4 @@ def create_occurrence_geojsons(taxa_ids, destination_dir):
         print("done.")
 
     print("All done!")
+    return taxa_ids

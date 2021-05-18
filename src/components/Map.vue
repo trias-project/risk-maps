@@ -123,8 +123,12 @@ export default Vue.extend({
   },
   mounted: function() {
     this.initMap(this.initialMapPosition, this.initialZoomLevel);
-    this.prepareOccurrenceLayer(this.occurrencesUrl);
-    this.prepareGeotifLayer(this.geotiffUrl);
+    if (this.showOccurrenceLayer) {
+      this.prepareOccurrenceLayer(this.occurrencesUrl);
+    }
+    if (this.showGeotiffLayer) {
+      this.prepareGeotifLayer(this.geotiffUrl);
+    }
   },
   watch: {
     showGeotiffLayer: {
@@ -174,7 +178,9 @@ export default Vue.extend({
     },
     geotiffUrl: {
       handler: function(newUrl: string) {
-        this.geotifDataLayer.removeFrom(this.lMapObj);
+        if (this.geotifDataLayer) {
+          this.geotifDataLayer.removeFrom(this.lMapObj);
+        }
         this.prepareGeotifLayer(newUrl); // (will also add it, if needed)
       }
     },

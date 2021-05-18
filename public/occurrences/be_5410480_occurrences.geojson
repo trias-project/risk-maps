@@ -1,0 +1,6 @@
+{
+"type": "FeatureCollection",
+"features": [
+{ "type": "Feature", "properties": { "cell_code": "1kmE3997N3138", "taxa": { "1989": { "n": 1, "min_coord_uncertainty": 700.0 }, "1992": { "n": 1, "min_coord_uncertainty": 700.0 }, "2014": { "n": 2, "min_coord_uncertainty": 100.0 }, "2016": { "n": 1, "min_coord_uncertainty": 700.0 } } }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 5.354868005119295, 51.260269472567991 ], [ 5.353960722530595, 51.269237063947543 ], [ 5.368265061434531, 51.269807380485716 ], [ 5.369169569758562, 51.260839661396574 ], [ 5.354868005119295, 51.260269472567991 ] ] ] } }
+]
+}

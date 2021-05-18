@@ -12,7 +12,7 @@
                 <b-form-group label="Species" label-cols="3">
                   <b-form-select
                     v-model="speciesId"
-                    :options="availableSpecies"
+                    :options="speciesForSelect"
                     size="sm"
                   ></b-form-select>
                 </b-form-group>
@@ -76,165 +76,17 @@
 import Vue from "vue";
 
 import Map from "./Map.vue";
-import { OverlayConf } from "../interfaces";
+import { OverlayConf, SpeciesSelectOption, SpeciesConfigEntry, FormRadioOption } from "../interfaces";
+import species_config from '../species_config.json';
 
 export default Vue.extend({
   name: "Home",
   props: {},
   data: function () {
-    const species = [
-      {
-        "value": 2489010,
-        "text": "Acridotheres cristatellus (Linnaeus, 1758)"
-      },
-      {
-        "value": 2498388,
-        "text": "Aix galericulata (Linnaeus, 1758)"
-      },
-      {
-        "value": 2498387,
-        "text": "Aix sponsa (Linnaeus, 1758)"
-      },
-      {
-        "value": 2498110,
-        "text": "Anas sibilatrix Poeppig, 1829"
-      },
-      {
-        "value": 5281901,
-        "text": "Campylopus introflexus Bridel, 1819"
-      },
-      {
-        "value": 5189032,
-        "text": "Corbicula fluminalis (O.F.M\u00fcller, 1774)"
-      },
-      {
-        "value": 8190231,
-        "text": "Corbicula fluminea (O.F.M\u00fcller, 1774)"
-      },
-      {
-        "value": 3663237,
-        "text": "Cornus sanguinea subsp. australis (C.A.Mey.) J\u00e1v."
-      },
-      {
-        "value": 8421432,
-        "text": "Cornus sanguinea subsp. hungarica (K\u00e1rp\u00e1ti) So\u00f3"
-      },
-      {
-        "value": 3082244,
-        "text": "Cornus sericea L."
-      },
-      {
-        "value": 2715482,
-        "text": "Cyperus eragrostis Lam."
-      },
-      {
-        "value": 2716226,
-        "text": "Cyperus esculentus L."
-      },
-      {
-        "value": 5220136,
-        "text": "Dama dama (Linnaeus, 1758)"
-      },
-      {
-        "value": 8745918,
-        "text": "Deroceras invadens Reise, Hutchinson, Schunack & Schlitt, 2011"
-      },
-      {
-        "value": 7190901,
-        "text": "Graptemys pseudogeographica pseudogeographica"
-      },
-      {
-        "value": 2891783,
-        "text": "Impatiens balfourii Hook.fil."
-      },
-      {
-        "value": 2891774,
-        "text": "Impatiens capensis Meerb."
-      },
-      {
-        "value": 2891770,
-        "text": "Impatiens glandulifera Royle"
-      },
-      {
-        "value": 2891782,
-        "text": "Impatiens parviflora DC."
-      },
-      {
-        "value": 9291405,
-        "text": "Massylaea vermiculata (O.F.M\u00fcller, 1774)"
-      },
-      {
-        "value": 2479407,
-        "text": "Myiopsitta monachus (Boddaert, 1783)"
-      },
-      {
-        "value": 2455523,
-        "text": "Orthriophis taeniurus (Cope, 1861)"
-      },
-      {
-        "value": 9185677,
-        "text": "Podarcis siculus (Rafinesque-schmaltz, 1810)"
-      },
-      {
-        "value": 5192470,
-        "text": "Potamopyrgus antipodarum (Gray, 1843)"
-      },
-      {
-        "value": 5229055,
-        "text": "Psittacula eupatria (Linnaeus, 1766)"
-      },
-      {
-        "value": 2479226,
-        "text": "Psittacula krameri (Scopoli, 1769)"
-      },
-      {
-        "value": 3003709,
-        "text": "Rosa glauca Pourr."
-      },
-      {
-        "value": 3003244,
-        "text": "Rosa multiflora Thunb."
-      },
-      {
-        "value": 2992543,
-        "text": "Rubus laciniatus Willd."
-      },
-      {
-        "value": 2993761,
-        "text": "Rubus spectabilis Pursh"
-      },
-      {
-        "value": 4559541,
-        "text": "Sinanodonta woodiana (I.Lea, 1834)"
-      },
-      {
-        "value": 9202318,
-        "text": "Symphyotrichum lanceolatum (Willd.) G.L.Nesom"
-      },
-      {
-        "value": 3151618,
-        "text": "Symphyotrichum novae-angliae (L.) G.L.Nesom"
-      },
-      {
-        "value": 3151558,
-        "text": "Symphyotrichum novi-belgii (L.) G.L.Nesom"
-      },
-      {
-        "value": 7826906,
-        "text": "Thectocercus acuticaudatus (Vieillot, 1818)"
-      },
-      {
-        "value": 2882849,
-        "text": "Vaccinium corymbosum L."
-      },
-      {
-        "value": 7777960,
-        "text": "Vaccinium macrocarpum Aiton"
-      }
-    ];
+    const species = species_config  as SpeciesConfigEntry[];
 
     return {
-      speciesId: species[1].value,
+      speciesId: species[0].value,
       availableSpecies: species,
 
       climateScenarioId: "hist",
@@ -269,19 +121,61 @@ export default Vue.extend({
       ],
 
       modelOrRealized: "model",
-      modelOrRealizedOptions: [
-        { text: "Modelled data", value: "model" },
-        { text: "Occurrence data", value: "realized" },
-        { text: "Both", value: "both" }
-      ],
-
       publicPath: process.env.BASE_URL
     };
   },
   methods: {},
+  watch: {
+    speciesId: {
+      immediate: true,
+      handler: function() {
+        const selection = this.selectedSpeciesConfig;
+        if (selection?.hasOccurrenceData && selection.hasModellingData) {
+          this.modelOrRealized = 'both'
+        } else {
+          if (selection?.hasOccurrenceData && !selection.hasModellingData) {
+            this.modelOrRealized = 'realized';
+          } else {
+            this.modelOrRealized = 'model';
+          }
+        }
+      }
+    }
+  },
   computed: {
+    modelOrRealizedOptions: function(): FormRadioOption[] {
+      return [
+        { 
+          text: "Modelled data", 
+          value: "model",
+          disabled: !(this.selectedSpeciesConfig.hasModellingData)
+        },
+        { 
+          text: "Occurrence data", 
+          value: "realized",
+          disabled: !(this.selectedSpeciesConfig.hasOccurrenceData)
+        },
+        { 
+          text: "Both", 
+          value: "both",
+          disabled: !(this.selectedSpeciesConfig.hasModellingData && this.selectedSpeciesConfig.hasOccurrenceData)
+        }
+      ]
+    },
+    selectedSpeciesConfig: function(): SpeciesConfigEntry {
+      const found = this.availableSpecies.find(s => s.value == this.speciesId)
+      return found ? found: this.availableSpecies[0]
+    },
     modelCurrentlyVisible: function (): boolean {
       return (this.modelOrRealized === "realized" ? false : true)
+    },
+    speciesForSelect: function (): SpeciesSelectOption[] {
+      return this.availableSpecies.map(s => {
+        return {
+          text: `${s.text} ${s.hasOccurrenceData ? '🌍':''} ${s.hasModellingData ? '📈':''}`,
+          value: s.value,
+        }
+      });
     },
     occurrencesCurrentlyVisible: function (): boolean {
       return (this.modelOrRealized === "model" ? false : true)
