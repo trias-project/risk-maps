@@ -1,0 +1,7 @@
+{
+"type": "FeatureCollection",
+"features": [
+{ "type": "Feature", "properties": { "cell_code": "1kmE3932N3135", "taxa": { "2017": { "n": 1, "min_coord_uncertainty": 25.0 }, "2018": { "n": 1, "min_coord_uncertainty": 25.0 }, "2019": { "n": 2, "min_coord_uncertainty": 25.0 }, "2020": { "n": 1, "min_coord_uncertainty": 7.0 } } }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 4.42927039955599, 51.192569134681605 ], [ 4.428184907851095, 51.201527685875405 ], [ 4.442457672660714, 51.2022115352311 ], [ 4.443540411136192, 51.193252831354989 ], [ 4.42927039955599, 51.192569134681605 ] ] ] } },
+{ "type": "Feature", "properties": { "cell_code": "1kmE4023N3110", "taxa": { "2014": { "n": 1, "min_coord_uncertainty": 100.0 }, "2015": { "n": 3, "min_coord_uncertainty": 10.0 }, "2016": { "n": 2, "min_coord_uncertainty": 25.0 }, "2017": { "n": 4, "min_coord_uncertainty": 25.0 }, "2020": { "n": 1, "min_coord_uncertainty": 120.0 } } }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 5.750031369971268, 51.023331294611438 ], [ 5.749207482619417, 51.032302801327369 ], [ 5.763442629210364, 51.032824171902185 ], [ 5.764263773276639, 51.023852549238924 ], [ 5.750031369971268, 51.023331294611438 ] ] ] } }
+]
+}
