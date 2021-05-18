@@ -20,7 +20,8 @@
     "leaflet": "^1.7.1",
     "npm-check": "^5.9.2",
     "proj4": "^2.7.2",
-    "vue": "^2.6.12"
+    "vue": "^2.6.12",
+    "xmldom": "^0.6.0"
   },
   "devDependencies": {
     "@types/d3-scale-chromatic": "^2.0.0",
