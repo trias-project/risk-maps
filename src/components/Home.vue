@@ -66,8 +66,6 @@
         :occurrences-url="occurrencesUrl"
         :overlays-conf="overlaysConf"
         :topic="mapTopic"
-        :showOccurrenceLayer="occurrencesCurrentlyVisible"
-        :showGeotiffLayer="modelCurrentlyVisible"
       />
     </b-container>
   </main>
@@ -84,7 +82,7 @@ export default Vue.extend({
   name: "Home",
   props: {},
   data: function () {
-    const species = species_config  as SpeciesConfigEntry[];
+    const species = species_config as SpeciesConfigEntry[];
 
     return {
       speciesId: species[0].value,
@@ -109,7 +107,10 @@ export default Vue.extend({
 
       mapTypeId: "",
       availableMapTypes: [
-        { value: "", text: "risk map" },
+        {
+          value: "",
+          text: "risk map"
+        },
         {
           value: "diff",
           text:
@@ -129,7 +130,7 @@ export default Vue.extend({
   watch: {
     speciesId: {
       immediate: true,
-      handler: function() {
+      handler: function () {
         const selection = this.selectedSpeciesConfig;
         if (selection?.hasOccurrenceData && selection.hasModellingData) {
           this.modelOrRealized = 'both'
@@ -144,28 +145,28 @@ export default Vue.extend({
     }
   },
   computed: {
-    modelOrRealizedOptions: function(): FormRadioOption[] {
+    modelOrRealizedOptions: function (): FormRadioOption[] {
       return [
-        { 
-          text: "Modelled data", 
+        {
+          text: "Modelled data",
           value: "model",
           disabled: !(this.selectedSpeciesConfig.hasModellingData)
         },
-        { 
-          text: "Occurrence data", 
+        {
+          text: "Occurrence data",
           value: "realized",
           disabled: !(this.selectedSpeciesConfig.hasOccurrenceData)
         },
-        { 
-          text: "Both", 
+        {
+          text: "Both",
           value: "both",
           disabled: !(this.selectedSpeciesConfig.hasModellingData && this.selectedSpeciesConfig.hasOccurrenceData)
         }
       ]
     },
-    selectedSpeciesConfig: function(): SpeciesConfigEntry {
+    selectedSpeciesConfig: function (): SpeciesConfigEntry {
       const found = this.availableSpecies.find(s => s.value == this.speciesId)
-      return found ? found: this.availableSpecies[0]
+      return found ? found : this.availableSpecies[0]
     },
     modelCurrentlyVisible: function (): boolean {
       return (this.modelOrRealized === "realized" ? false : true)
@@ -173,7 +174,7 @@ export default Vue.extend({
     speciesForSelect: function (): SpeciesSelectOption[] {
       return this.availableSpecies.map(s => {
         return {
-          text: `${s.text} ${s.hasOccurrenceData ? '🌍':''} ${s.hasModellingData ? '📈':''}`,
+          text: `${s.text} ${s.hasOccurrenceData ? '🌍' : ''} ${s.hasModellingData ? '📈' : ''}`,
           value: s.value,
         }
       });
@@ -195,7 +196,7 @@ export default Vue.extend({
       return [
         { filename: "ecoregions.geojson", label: "Ecoregions", keyProperty: "REGION", nameProperty: "REGION" },
         { filename: "bioregions.geojson", label: "Bioregions", keyProperty: "PK_UID", nameProperty: "name" },
-        { filename: "drainage_basins.geojson", label: "Drainage basins", keyProperty: "name", nameProperty: "name"},
+        { filename: "drainage_basins.geojson", label: "Drainage basins", keyProperty: "name", nameProperty: "name" },
       ].map( // The features that have the same 'REGION' property will be highlighted together
         e => {
           return {
@@ -207,26 +208,23 @@ export default Vue.extend({
         }
       );
     },
-    occurrencesUrl: function (): string {
-      return `${this.publicPath}occurrences/be_${this.speciesId}_occurrences.geojson`;
+    occurrencesUrl: function (): string | null {
+      if (this.occurrencesCurrentlyVisible) {
+        return `${this.publicPath}occurrences/be_${this.speciesId}_occurrences.geojson`;
+      } else {
+        return null;
+      }
     },
-    geotiffUrl: function (): string {
-      if (this.selectionMade) {
+    geotiffUrl: function (): string | null {
+      if (this.modelCurrentlyVisible) {
         if (this.mapTypeId === "") {
           return `${this.publicPath}geotiffs/be_${this.speciesId}_${this.climateScenarioId}.4326.tif`;
         } else {
           return `${this.publicPath}geotiffs/be_${this.speciesId}_${this.climateScenarioId}_${this.mapTypeId}.4326.tif`;
         }
       } else {
-        return "";
+        return null;
       }
-    },
-    selectionMade: function (): boolean {
-      return this.climateScenarioId != null &&
-        this.speciesId != null &&
-        this.mapTypeId != null
-        ? true
-        : false;
     }
   },
   components: {

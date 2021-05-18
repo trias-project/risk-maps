@@ -19,7 +19,7 @@
 
         <b-form-group label="Data layer opacity">
           <b-form-input
-            :disabled="!showGeotiffLayer"
+            :disabled="!geoTiffLayerVisible"
             id="opacity"
             v-model="geotifDataLayerOpacity"
             type="range"
@@ -28,7 +28,7 @@
             step="0.01"
           ></b-form-input>
           <color-legend
-            v-if="showGeotiffLayer"
+            v-if="geoTiffLayerVisible"
             :color-scale="colorScale"
             :opacity="geotifDataLayerOpacity"
             :topic="topic"
@@ -71,14 +71,8 @@ export default Vue.extend({
     topic: {
       type: String
     },
-    showOccurrenceLayer: {
-      type: Boolean
-    },
-    showGeotiffLayer: {
-      type: Boolean
-    }
   },
-  data: function() {
+  data: function () {
     return {
       lMapObj: (null as unknown) as L.Map,
       currentOverlayLayer: (null as unknown) as L.GeoJSON,
@@ -99,17 +93,21 @@ export default Vue.extend({
     };
   },
   computed: {
-    currentOverlayConf: function(): OverlayConf | undefined {
+    geoTiffLayerVisible: function (): boolean {
+      return this.geotiffUrl !== null
+    },
+
+    currentOverlayConf: function (): OverlayConf | undefined {
       return this.overlaysConf.find(e => {
         return e.url === this.currentOverlayUrl;
       });
     },
 
-    overlayLayerVisible: function(): boolean {
+    overlayLayerVisible: function (): boolean {
       return this.currentOverlayLayer != null;
     },
 
-    availableOverlaysForSelect: function() {
+    availableOverlaysForSelect: function () {
       const overlays = this.overlaysConf.map((e: OverlayConf) => {
         return {
           text: e.name,
@@ -121,47 +119,22 @@ export default Vue.extend({
       return overlays;
     }
   },
-  mounted: function() {
+  mounted: function () {
     this.initMap(this.initialMapPosition, this.initialZoomLevel);
-    if (this.showOccurrenceLayer) {
-      this.prepareOccurrenceLayer(this.occurrencesUrl);
-    }
-    if (this.showGeotiffLayer) {
-      this.prepareGeotifLayer(this.geotiffUrl);
-    }
   },
   watch: {
-    showGeotiffLayer: {
-      handler: function(newVal: boolean) {
-        if (newVal === true) {
-          this.geotifDataLayer.addTo(this.lMapObj);
-        } else {
-          this.geotifDataLayer.removeFrom(this.lMapObj);
-        }
-      }
-    },
-    showOccurrenceLayer: {
-      handler: function(newVal: boolean) {
-        if (newVal === true) {
-          this.occurrenceLayer.addTo(this.lMapObj);
-          this.occurrenceLayer.bringToFront();
-        } else {
-          this.occurrenceLayer.removeFrom(this.lMapObj);
-        }
-      }
-    },
     geotifDataLayerOpacity: {
-      handler: function(newVal: number) {
+      handler: function (newVal: number) {
         this.geotifDataLayer.setOpacity(newVal);
       }
     },
     currentOverlayUrl: {
-      handler: function(newVal: string) {
+      handler: function (newVal: string) {
         if (this.currentOverlayLayer) {
           this.currentOverlayLayer.removeFrom(this.lMapObj);
           this.currentOverlayLayer = (null as unknown) as L.GeoJSON;
         }
-        
+
         if (newVal !== "") {
           fetch(newVal)
             .then(res => res.json())
@@ -177,17 +150,63 @@ export default Vue.extend({
       }
     },
     geotiffUrl: {
-      handler: function(newUrl: string) {
-        if (this.geotifDataLayer) {
-          this.geotifDataLayer.removeFrom(this.lMapObj);
+      immediate: true,
+      handler: function (newUrl: string | null) {
+        this.removeLayerFromMapIfExists(this.geotifDataLayer);
+        if (newUrl !== null) {
+          const handleErrors = function (response: Response) {
+            if (!response.ok) {
+              throw Error(response.statusText);
+            }
+            return response;
+          };
+          fetch(newUrl) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
+            .then(handleErrors)
+            .then(function (response) {
+              return response.arrayBuffer();
+            })
+            .then(arrayBuffer => {
+              parseGeoraster(arrayBuffer).then(georaster => {
+                this.geotifDataLayer = new GeoRasterLayer({
+                  georaster: georaster,
+                  opacity: this.geotifDataLayerOpacity,
+                  pixelValuesToColorFn: values => {
+                    // no data is represented by very small values (normal range is [0,1])
+                    if (values[0] < -10000) {
+                      return "rgba(0, 0, 0, 0)"; // transparent
+                    } else {
+                      return this.colorScale(values[0]);
+                    }
+                  },
+                  resolution: 64 // optional parameter for adjusting display resolution
+                });
+
+                this.addLayerToMap(this.geotifDataLayer);
+                this.loadError = false;
+              });
+            })
+            .catch(() => {
+              this.loadError = true;
+            });
+
+
         }
-        this.prepareGeotifLayer(newUrl); // (will also add it, if needed)
       }
     },
     occurrencesUrl: {
-      handler: function(newUrl: string) {
-        this.occurrenceLayer.removeFrom(this.lMapObj);
-        this.prepareOccurrenceLayer(newUrl);
+      immediate: true,
+      handler: function (newUrl: string | null) {
+        this.removeLayerFromMapIfExists(this.occurrenceLayer);
+        if (newUrl !== null) {
+          fetch(newUrl)
+            .then(function (response) {
+              return response.json();
+            })
+            .then(data => {
+              this.occurrenceLayer = L.geoJSON(data);
+              this.addLayerToMap(this.occurrenceLayer);
+            });
+        }
       }
     }
   },
@@ -195,13 +214,23 @@ export default Vue.extend({
     ColorLegend
   },
   methods: {
-    resetHighlight: function() {
+    removeLayerFromMapIfExists(layer: L.GeoJSON | GeoRasterLayer): void {
+      if (layer) {
+        layer.removeFrom(this.lMapObj);
+      }
+    },
+
+    addLayerToMap(layer: L.GeoJSON | GeoRasterLayer): void {
+      this.lMapObj.addLayer(layer);
+    },
+
+    resetHighlight: function () {
       this.currentOverlayLayer.resetStyle();
       this.highlightedFeatureName = noHiglightedFeatureString;
       this.highlightedFeatureKeyValue = "";
     },
 
-    overlayStyle: function(): L.PathOptions {
+    overlayStyle: function (): L.PathOptions {
       return {
         fillColor: "#DC571D",
         weight: 2,
@@ -211,7 +240,7 @@ export default Vue.extend({
       };
     },
 
-    highlightFeature: function(e: L.LeafletEvent) {
+    highlightFeature: function (e: L.LeafletEvent) {
       if (this.currentOverlayConf) {
         this.highlightedFeatureName =
           e.target.feature.properties[this.currentOverlayConf.nameProperty];
@@ -239,13 +268,13 @@ export default Vue.extend({
       }
     },
 
-    onEachFeature: function(feature: geojson.Feature, layer: L.GeoJSON) {
+    onEachFeature: function (feature: geojson.Feature, layer: L.GeoJSON) {
       layer.on({
         mouseover: this.highlightFeature,
         mouseout: this.resetHighlight
       });
     },
-    initMap: function(center: LatLngExpression, zoom: number): void {
+    initMap: function (center: LatLngExpression, zoom: number): void {
       this.lMapObj = L.map("map").setView(center, zoom);
 
       const backgroundLayer = L.tileLayer(
@@ -259,58 +288,6 @@ export default Vue.extend({
 
       backgroundLayer.addTo(this.lMapObj);
     },
-    prepareOccurrenceLayer: function(url: string): void {
-      fetch(url)
-        .then(function(response) {
-          return response.json();
-        })
-        .then(data => {
-          this.occurrenceLayer = L.geoJSON(data);
-
-          if (this.showOccurrenceLayer) {
-            this.occurrenceLayer.addTo(this.lMapObj);
-          }
-        });
-    },
-    prepareGeotifLayer: function(url: string): void {
-      const handleErrors = function(response: Response) {
-        if (!response.ok) {
-          throw Error(response.statusText);
-        }
-        return response;
-      };
-      fetch(url) // So far, it doesn't work with the inital file but it looks better once reprojected to 4326
-        .then(handleErrors)
-        .then(function(response) {
-          return response.arrayBuffer();
-        })
-        .then(arrayBuffer => {
-          parseGeoraster(arrayBuffer).then(georaster => {
-            this.geotifDataLayer = new GeoRasterLayer({
-              georaster: georaster,
-              opacity: this.geotifDataLayerOpacity,
-              pixelValuesToColorFn: values => {
-                // no data is represented by very small values (normal range is [0,1])
-                if (values[0] < -10000) {
-                  return "rgba(0, 0, 0, 0)"; // transparent
-                } else {
-                  return this.colorScale(values[0]);
-                }
-              },
-              resolution: 64 // optional parameter for adjusting display resolution
-            });
-
-            if (this.showGeotiffLayer) {
-              this.geotifDataLayer.addTo(this.lMapObj);
-            }
-
-            this.loadError = false;
-          });
-        })
-        .catch(() => {
-          this.loadError = true;
-        });
-    }
   }
 });
 </script>
