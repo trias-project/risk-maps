@@ -10,7 +10,7 @@
           <b-form>
             <b-row>
               <b-col lg="7">
-                <b-form-group label="Species" label-cols="3">
+                <b-form-group label="Species" label-cols="3" description="🌍: species has occurrence data 📈: species has modelled data">
                   <b-form-select
                     v-model="speciesId"
                     :options="speciesForSelect"
