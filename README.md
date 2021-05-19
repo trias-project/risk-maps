@@ -44,3 +44,8 @@ That's all, the script will save its output to `src/species_config.json`.
 ## License
 
 [MIT License](LICENSE)
+
+# TODO:
+
+- Legend for select (occurrences/model)
+- Checkbox to show only modelled species
