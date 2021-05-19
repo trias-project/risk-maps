@@ -14,7 +14,7 @@ export interface SpeciesConfigEntry {
   text: string,
   value: number,
   hasOccurrenceData: boolean, 
-  hasModellingData: boolean
+  hasModelledData: boolean
 }
 
 export interface FormRadioOption {

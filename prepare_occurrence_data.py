@@ -95,7 +95,7 @@ def create_occurrence_geojsons(destination_dir):
     ]
     print("done.")
 
-    print(f"Filtering cube for relevant years")
+    print("Filtering cube for relevant years")
     cube = cube[cube["year"] >= MIN_YEAR]
     cube = cube[cube["year"] <= MAX_YEAR]
     print("done")

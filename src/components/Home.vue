@@ -10,7 +10,7 @@
           <b-form>
             <b-row>
               <b-col lg="7">
-                <b-form-group label="Species" label-cols="3" description="🌍: species has occurrence data 📈: species has modelled data">
+                <b-form-group label="Species" label-cols="3" description="📈: species has modelled data">
                   <b-form-select
                     v-model="speciesId"
                     :options="speciesForSelect"
@@ -132,10 +132,10 @@ export default Vue.extend({
       immediate: true,
       handler: function () {
         const selection = this.selectedSpeciesConfig;
-        if (selection?.hasOccurrenceData && selection.hasModellingData) {
+        if (selection?.hasOccurrenceData && selection.hasModelledData) {
           this.modelOrRealized = 'both'
         } else {
-          if (selection?.hasOccurrenceData && !selection.hasModellingData) {
+          if (selection?.hasOccurrenceData && !selection.hasModelledData) {
             this.modelOrRealized = 'realized';
           } else {
             this.modelOrRealized = 'model';
@@ -150,7 +150,7 @@ export default Vue.extend({
         {
           text: "Modelled data",
           value: "model",
-          disabled: !(this.selectedSpeciesConfig.hasModellingData)
+          disabled: !(this.selectedSpeciesConfig.hasModelledData)
         },
         {
           text: "Occurrence data",
@@ -160,7 +160,7 @@ export default Vue.extend({
         {
           text: "Both",
           value: "both",
-          disabled: !(this.selectedSpeciesConfig.hasModellingData && this.selectedSpeciesConfig.hasOccurrenceData)
+          disabled: !(this.selectedSpeciesConfig.hasModelledData && this.selectedSpeciesConfig.hasOccurrenceData)
         }
       ]
     },
@@ -174,7 +174,8 @@ export default Vue.extend({
     speciesForSelect: function (): SpeciesSelectOption[] {
       return this.availableSpecies.map(s => {
         return {
-          text: `${s.text} ${s.hasOccurrenceData ? '🌍' : ''} ${s.hasModellingData ? '📈' : ''}`,
+          text: `${s.text} ${s.hasModelledData ? '📈' : ''}`,  // Currently, all species have occurrence data, so we don't show a specific icon for that
+
           value: s.value,
         }
       });

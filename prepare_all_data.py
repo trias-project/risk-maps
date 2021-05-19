@@ -89,7 +89,7 @@ for species_id in species_ids_in_cube:
             "value": species_id,
             "text": sn,
             "hasOccurrenceData": True,
-            "hasModellingData": species_id in species_ids_in_geotiffs,
+            "hasModelledData": species_id in species_ids_in_geotiffs,
         }
     )
 
