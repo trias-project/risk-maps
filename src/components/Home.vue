@@ -2,7 +2,7 @@
   <main>
     <b-container class="mt-3">
       <p><strong>Invasive alien species</strong> have the potential to damage ecosystems, reduce biodiversity and cause other problems for people and wildlife. In order to mitigate these problems research is needed into what the potential risks are and which species are most likely to be a problem. One of the techniques we use is species <strong>distribution modelling</strong>. These models aim to estimate the potential distribution of a species given the known environmental conditions where it is currently living. In such models we can also incorporate future scenarios into such models, so that we can account for climate change in our <strong>evaluation of risk</strong>.</p>
-      <p>These maps are unlikely to be precise predictions of current or future species distributions, but are nevertheless a guide to scientists conducting risk assessments. They help us by indicating which areas might be most vulnerable to invasion, and whether climate change is likely to cause greater or lesser spread of the species.</p>
+      <p>These maps are unlikely to be precise predictions of current or future species distributions, but are nevertheless a guide to scientists conducting risk assessments. They help us by indicating which areas might be most vulnerable to invasion, and whether climate change is likely to cause greater or lesser establishment of the species.</p>
     </b-container>
     <b-container fluid>
       <b-row>
