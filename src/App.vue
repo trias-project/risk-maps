@@ -6,7 +6,7 @@
       </b-container>
     </b-navbar>
     
-    <Home />
+    <RiskHome />
 
     <footer class="bg-dark text-muted">
       <b-container>
@@ -27,14 +27,14 @@
 
 <script lang="ts">
 import Vue from "vue";
-import Home from "@/components/Home.vue";
+import RiskHome from "@/components/RiskHome.vue";
 
 declare const __COMMIT_HASH__: string;
 
 export default Vue.extend({
   name: "App",
   components: {
-    Home
+    RiskHome
   },
   methods: {
     commitHash: function (): string {

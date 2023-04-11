@@ -54,7 +54,7 @@ import * as geojson from "geojson";
 const noHiglightedFeatureString = "";
 
 export default Vue.extend({
-  name: "Map",
+  name: "RiskMap",
   props: {
     geotiffUrl: {
       type: String,

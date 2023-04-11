@@ -61,7 +61,7 @@
         </b-col>
       </b-row>
 
-      <Map
+      <RiskMap
         :geotiff-url="geotiffUrl"
         :occurrences-url="occurrencesUrl"
         :overlays-conf="overlaysConf"
@@ -74,12 +74,12 @@
 <script lang="ts">
 import Vue from "vue";
 
-import Map from "./Map.vue";
+import RiskMap from "./RiskMap.vue";
 import { OverlayConf, SpeciesSelectOption, SpeciesConfigEntry, FormRadioOption } from "../interfaces";
 import species_config from '../species_config.json';
 
 export default Vue.extend({
-  name: "Home",
+  name: "RiskHome",
   props: {},
   data: function () {
     const species = species_config as SpeciesConfigEntry[];
@@ -229,7 +229,7 @@ export default Vue.extend({
     }
   },
   components: {
-    Map
+    RiskMap
   }
 });
 </script>
